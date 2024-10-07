@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>일자리 찾기 챗봇</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/index.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8371fd535d5d33dfcec6e7f3cdce0d5a"></script>
+
+    <style>
+        header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-left button {
+            margin-right: 10px;
+            width: 100px;
+        }
+        .header-right span {
+            margin-right: 10px;
+        }
+        .header-right button {
+            margin-right: 10px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- 로그인 상태 및 홈으로 가기 버튼 배치 -->
+        <div class="header-left">
+            <button onclick="location.href='{% url 'home' %}'" class="btn-home">홈으로</button>
+        </div>
+        <div class="header-right">
+            {% if user.is_authenticated %}
+                <span>안녕하세요, {{ user.username }}님!</span>
+                <button onclick="location.href='{% url 'logout' %}'" class="btn-logout">로그아웃</button>
+            {% else %}
+                <button onclick="location.href='{% url 'login' %}'" class="btn-login">로그인</button>
+            {% endif %}
+        </div>
+    </header>
+    <h1>채용 정보 및 장소 검색 챗봇</h1>
+    <div class="chat-map-wrapper">
+        <div><div id="chat-container"></div>
+        <div class="input-area">
+            <input type="text" id="userAddress" class="user-Message" placeholder="거주하는 주소를 입력하세요">
+            <button onclick="sendMessage()">전송</button>
+        </div></div>
+
+        <div class="map_wrap">
+            <div id="mapWrapper">
+                <div id="map"></div> <!-- 지도를 표시할 div 입니다 -->
+            </div>
+            <div id="rvWrapper">
+                <div id="roadview"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+            </div>
+        </div>
+    </div>
+    <div class="api-banner">
+        <p>본 프로젝트에는 다음의 API를 활용했습니다:</p>
+        <a href="https://www.data.go.kr/data/15015153/openapi.do" class="api-button" target="_blank">
+            한국노인인력개발원 노인 구인정보 API
+        </a>
+        <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">
+            카카오맵 로드뷰 API
+        </a>
+        <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button" target="_blank">
+            카카오맵 주소 검색 API
+        </a>
+    </div>
+
+    <script src="{% static 'chatbot/script.js' %}"></script> <!-- 스크립트 파일 로드 -->
+    <script src="{% static 'chatbot/load.js' %}"></script> <!-- 스크립트 파일 로드 -->
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.chat-map-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    justify-content: space-between; /* 좌우로 요소 나열 */
+}
+
+#chat-container {
+    flex: 1; /* 챗봇이 좌측에 위치하며, 전체의 50% 차지 */
+    margin-right: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 20px;
+    overflow-y: auto;
+    height: 800px; /* 고정 높이 */
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    line-height: 1.5;
+}
+
+.user-message {
+    background-color: #d1e7dd;
+    text-align: right;
+    margin-left: 50px; /* 사용자 메시지 위치 조정 */
+}
+
+.bot-message {
+    background-color: #e2e3e5;
+    text-align: left;
+    margin-right: 50px; /* 챗봇 메시지 위치 조정 */
+}
+
+.place-card {
+    background: #e9ecef;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+}
+
+.place-name {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.place-url {
+    text-decoration: none;
+    color: #007bff;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Input 및 버튼 스타일 */
+.input-area {
+    text-align: left;
+    margin-top: 10px;
+}
+
+input[type="text"] {
+    width: 73%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    display: inline-block;
+    text-align: center;
+}
+
+.button1 {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    margin-right: 8px;
+    width: 120px;
+}
+
+.button1:hover {
+    background-color: #0056b3;
+}
+
+button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    width: 20%;
+    display: inline-block;
+    text-align: center;
+    margin-right: 8px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* 지도와 로드뷰 영역 */
+.map_wrap {
+    display: flex;
+    flex-direction: column; /* 지도와 로드뷰를 세로로 나열 */
+    width: 40%; /* 우측에 배치되도록 조정 */
+    height:1000px;
+}
+
+#mapWrapper {
+    height: 400px; /* 지도 높이 조정 */
+    width: 100%;
+}
+
+#rvWrapper {
+    height: 400px; /* 로드뷰 높이 조정 */
+    width: 100%;
+}
+
+#map, #roadview {
+    width: 100%;
+    height: 100%;
+}
+.api-banner {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: 5px 10px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+.api-banner p {
+    font-size: 12px;
+    margin: 5px 0;
+    display: inline-block;
+    color: #333;
+}
+.api-button {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 3px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 12px;
+}
+.api-button:hover {
+    background-color: #0056b3;
+}

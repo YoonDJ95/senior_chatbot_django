@@ -26,3 +26,5 @@
 
 "C:\go\mysite\Scripts\activate.bat" # 가상화 실행
 "python manage.py runserver" # 가상서버 실행
+
+"pip install -r requirements.txt" # requirements.txt 안에 있는 요소 설치

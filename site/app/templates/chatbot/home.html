@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/home.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>환영합니다!</h1>
+
+        <!-- 메시지 표시 -->
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- 로그인 여부에 따른 다른 콘텐츠 표시 -->
+        {% if user.is_authenticated %}
+            <p>안녕하세요, {{ user.username }}님!</p>
+            <button onclick="location.href='{% url 'logout' %}'">로그아웃</button>
+            <button onclick="location.href='{% url 'chatbot_index' %}'">일자리 찾기</button>
+
+            <!-- 관리자 페이지로 이동하는 버튼 (관리자만 보이도록 설정 가능) -->
+            {% if user.is_staff %}
+                <button onclick="location.href='{% url 'admin:index' %}'">관리자 페이지로 이동</button>
+            {% endif %}
+        {% else %}
+            <p>로그인하지 않은 상태입니다. 아래 버튼을 클릭해 로그인 또는 회원가입을 진행하세요:</p>
+            <button onclick="location.href='{% url 'signup' %}'">회원가입</button>
+            <button onclick="location.href='{% url 'login' %}'">로그인</button>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+/mysite/include
+/mysite/Lib
+/mysite/Scripts
+
+/__pycache__
+
+/chromedriver-win64
+
+/ad
+
+.env

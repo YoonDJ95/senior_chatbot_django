@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import config
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,9 +26,41 @@ SECRET_KEY = 'django-insecure-x7ciez#kn3j2-a^efc)zi3jj-1g@2_2lg_w2y_2^hgmq9b8k3=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # DEBUG 대신 INFO로 변경
+            'propagate': True,
+        },
+        'your_app_name': {  # 여기에서 app 이름을 사용하세요.
+            'handlers': ['console'],
+            'level': 'INFO',  # DEBUG 대신 INFO로 변경
+            'propagate': True,
+        },
+    },
+}
+
+
+
 ALLOWED_HOSTS = []
+# KAKAO API 설정
+KAKAO_API_KEY='171d35b8550f9fd896fe5f3724668e0d'
+KAKAO_API_URL='https://dapi.kakao.com/v2/local/search/keyword.json'  # 실제 카카오 API URL로 변경
 
+KAKAO_SDK_API_KEY='8371fd535d5d33dfcec6e7f3cdce0d5a'
 
+# 공공데이터 API 설정
+PUBLIC_DATA_API_KEY='k3j+rBdCFRKV+wyerVxM7H2jyevfSU3PYoLwzcO62WXtbD0osGwAVNJYCXMphlfjoPofM/5VR7JDg8IabF8zOg=='
+PUBLIC_DATA_API_URL='http://apis.data.go.kr/B552474/SenuriService/getJobList'  # 실제 공공데이터 API URL로 변경
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +70,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'app',
+    'accounts',
+    'bootstrap4'
 ]
 
 MIDDLEWARE = [
@@ -54,7 +91,11 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',  # 프로젝트 템플릿 경로 추가
+            BASE_DIR / 'accounts/templates',  # accounts 앱의 템플릿 경로 추가
+            BASE_DIR / 'app/templates',  # app의 템플릿 경로
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,20 +126,19 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    #{
+    #    'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    #},
+    #{
+    #    'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    #},
+    #{
+    #    'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    #},
+    #{
+    #    'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    #},
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -115,7 +155,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+# C:\go\site\config\settings.py
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "app" / "static",
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
