@@ -1,11 +1,18 @@
-/mysite/include
-/mysite/Lib
-/mysite/Scripts
+# 가상화폴더
+/mysite
 
+# 가상서버
+/.vscode
+
+# 캐시파일
 /__pycache__
 
+# 셀레니움용 크롬 드라이버
 /chromedriver-win64
 
+# 기존작업 버리는 파일
 /ad
 
+# 환경변수
 .env
+
