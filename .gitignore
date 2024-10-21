@@ -16,3 +16,5 @@
 # 환경변수
 .env
 
+*.pyc
+__pycache__/

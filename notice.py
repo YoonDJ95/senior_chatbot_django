@@ -28,3 +28,6 @@
 "python manage.py runserver" # 가상서버 실행
 
 "pip install -r requirements.txt" # requirements.txt 안에 있는 요소 설치
+
+
+"git rm -r --cached 항목명/" #깃에 해당 항목 추적 제외
