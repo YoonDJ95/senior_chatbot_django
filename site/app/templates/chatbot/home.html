@@ -6,6 +6,7 @@
     <title>홈</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'chatbot/home.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/api.css' %}">
 </head>
 <body>
     <div class="container">
@@ -35,6 +36,18 @@
             <button onclick="location.href='{% url 'signup' %}'">회원가입</button>
             <button onclick="location.href='{% url 'login' %}'">로그인</button>
         {% endif %}
+    </div>
+    <div class="api-banner">
+        <p>본 프로젝트에는 다음의 API를 활용했습니다:</p>
+        <a href="https://www.bigdata-map.kr/search/86750961" class="api-button" target="_blank">
+            통합 데이터 지도 API
+        </a>
+        <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">
+            카카오맵 로드뷰 API
+        </a>
+        <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button" target="_blank">
+            카카오맵 주소 검색 API
+        </a>
     </div>
 </body>
 </html>

@@ -1,7 +1,9 @@
 {% block content %}
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'chatbot/search_history.css' %}">
-
+<link rel="stylesheet" type="text/css" href="{% static 'chatbot/api.css' %}">
+<button class="button" onclick="window.history.back()">뒤로 가기</button>
+<button class="button" onclick="clearSearchHistory()">검색 기록 지우기</button>
 <h1>검색 기록</h1>
 <ul>
     {% for record in history %}
@@ -20,9 +22,17 @@
         </li>
     {% endfor %}
 </ul>
-
-<button class="button" onclick="clearSearchHistory()">검색 기록 지우기</button>
-<button class="button" onclick="location.href='{% url 'home' %}'">홈으로 돌아가기</button>
-
+<div class="api-banner">
+    <p>본 프로젝트에는 다음의 API를 활용했습니다:</p>
+    <a href="https://www.bigdata-map.kr/search/86750961" class="api-button" target="_blank">
+        통합 데이터 지도 API
+    </a>
+    <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">
+        카카오맵 로드뷰 API
+    </a>
+    <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button" target="_blank">
+        카카오맵 주소 검색 API
+    </a>
+</div>
 <script src="{% static 'chatbot/search_history.js' %}"></script> <!-- 스크립트 파일 로드 -->
 {% endblock %}

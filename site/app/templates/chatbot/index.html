@@ -5,37 +5,12 @@
     <title>일자리 찾기 챗봇</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'chatbot/index.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/api.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8371fd535d5d33dfcec6e7f3cdce0d5a"></script>
 
     <style>
-        header {
-            background-color: #f8f9fa;
-            padding: 15px;
-            position: sticky;
-            top: 0;
-            width: 100%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        .header-left button {
-            margin-right: 10px;
-            width: 100px;
-        }
-        .header-right span {
-            margin-right: 10px;
-        }
-        .header-right button {
-            margin-right: 10px;
-            width: 100px;
-        }
+
     </style>
 </head>
 <body>
@@ -75,8 +50,8 @@
     </div>
     <div class="api-banner">
         <p>본 프로젝트에는 다음의 API를 활용했습니다:</p>
-        <a href="https://www.data.go.kr/data/15015153/openapi.do" class="api-button" target="_blank">
-            한국노인인력개발원 노인 구인정보 API
+        <a href="https://www.bigdata-map.kr/search/86750961" class="api-button" target="_blank">
+            통합 데이터 지도 API
         </a>
         <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">
             카카오맵 로드뷰 API
