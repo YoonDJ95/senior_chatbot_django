@@ -118,6 +118,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'search_history_db': {  # 검색 기록을 위한 별도의 데이터베이스
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'search_history_db.sqlite3',  # 검색 기록용 데이터베이스
     }
 }
 

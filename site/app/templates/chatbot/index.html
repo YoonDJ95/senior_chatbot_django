@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>일자리 찾기 챗봇</title>
@@ -47,6 +47,9 @@
         <div class="header-right">
             {% if user.is_authenticated %}
                 <span>안녕하세요, {{ user.username }}님!</span>
+                {% if user.is_authenticated %}
+                <button onclick="location.href='{% url 'search_history' %}'">검색 기록</button>
+                {% endif %}
                 <button onclick="location.href='{% url 'logout' %}'" class="btn-logout">로그아웃</button>
             {% else %}
                 <button onclick="location.href='{% url 'login' %}'" class="btn-login">로그인</button>
@@ -82,7 +85,27 @@
             카카오맵 주소 검색 API
         </a>
     </div>
-
+    
+    <script type="text/javascript">
+        // CSRF 토큰을 가져오는 함수 정의
+        const csrftoken = getCookie('csrftoken');
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the given name
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+    </script>
     <script src="{% static 'chatbot/script.js' %}"></script> <!-- 스크립트 파일 로드 -->
     <script src="{% static 'chatbot/load.js' %}"></script> <!-- 스크립트 파일 로드 -->
 

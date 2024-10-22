@@ -1,0 +1,40 @@
+    /* CSS 스타일 추가 */
+    .job-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 10px 0;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        cursor: pointer; /* 커서 모양 변경 */
+    }
+
+    .job-title {
+        font-weight: bold;
+        color: #007bff;
+        font-size: 1.2em;
+    }
+
+    .results {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #eef;
+        border: 1px dashed #007bff;
+        border-radius: 5px;
+        display: none; /* 기본적으로 숨김 처리 */
+    }
+
+    /* 버튼 스타일 */
+    .button {
+        padding: 10px 20px;
+        margin: 10px 5px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: #0056b3;
+    }

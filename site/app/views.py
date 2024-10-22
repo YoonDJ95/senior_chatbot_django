@@ -292,3 +292,51 @@ def home(request):
 # 카카오 API 키를 반환하는 함수
 def get_kakao_api_key(request):
     return JsonResponse({'apiKey': settings.KAKAO_API_KEY})
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import SearchHistory
+import json
+
+@csrf_exempt  # CSRF 보호를 우회, 실제 운영에서는 적절한 방법으로 처리
+def save_search_history(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        search_query = data.get('search_query')
+        results = data.get('results')  # 결과 메시지 추가
+        user = request.user
+
+        if user.is_authenticated and search_query:
+            print(f"Saving search history for user: {user.username}, Query: {search_query}, Results: {results}")
+            SearchHistory.objects.create(
+                user=user,
+                search_query=search_query,
+                search_results=results  # 저장할 때 결과도 추가
+            )
+            return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+# 사용자별 검색 기록 보기
+def search_history(request):
+    if request.user.is_authenticated:
+        history = SearchHistory.objects.filter(user=request.user).order_by('-search_date')
+        # 이 부분에서 검색 결과도 함께 가져올 수 있도록 개선
+        for record in history:
+            # 예시: record.search_results에 저장된 검색 결과를 여기에 불러오는 로직 추가
+            pass
+        return render(request, 'chatbot/search_history.html', {'history': history})
+    else:
+        return redirect('login')  # 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def clear_search_history(request):
+    if request.method == 'POST':
+        SearchHistory.objects.filter(user=request.user).delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)

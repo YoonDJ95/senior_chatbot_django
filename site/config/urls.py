@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.urls import path
 from app.views import chatbot_response, index, get_kakao_api_key, job_detail_view,home  # 새로운 뷰 추가
 from django.urls import path, include
+from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +30,7 @@ urlpatterns = [
     path('', home, name='home'),  # 기본페이지
     path('index/', index, name='chatbot_index'),  # 일자리 차기
     path('accounts/', include('accounts.urls')),
+    path('save-search-history/', views.save_search_history, name='save_search_history'),
+    path('search-history/', views.search_history, name='search_history'),
+    path('clear-search-history/', views.clear_search_history, name='clear_search_history'),
 ]

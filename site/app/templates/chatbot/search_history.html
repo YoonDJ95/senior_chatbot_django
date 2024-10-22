@@ -1,0 +1,28 @@
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'chatbot/search_history.css' %}">
+
+<h1>검색 기록</h1>
+<ul>
+    {% for record in history %}
+        <li>
+            <div class="job-card" onclick="toggleResults(this)">
+                <div class="job-title">검색어: {{ record.search_query }}</div>
+                <div>검색일자: {{ record.search_date|date:"Y-m-d H:i:s" }}</div>
+                {% if record.search_results %}
+                    <div class="results">
+                        {{ record.search_results|safe }}  <!-- HTML을 안전하게 출력하기 위해 safe 필터 사용 -->
+                    </div>
+                {% else %}
+                    <div>검색 결과가 없습니다.</div>
+                {% endif %}
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+<button class="button" onclick="clearSearchHistory()">검색 기록 지우기</button>
+<button class="button" onclick="location.href='{% url 'home' %}'">홈으로 돌아가기</button>
+
+<script src="{% static 'chatbot/search_history.js' %}"></script> <!-- 스크립트 파일 로드 -->
+{% endblock %}
