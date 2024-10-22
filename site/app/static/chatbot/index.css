@@ -9,36 +9,6 @@ h1 {
     color: #333;
 }
 
-header {
-    background-color: #f8f9fa;
-    padding: 15px;
-    position: sticky;
-    top: 0;
-    width: 97.5vw;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 1000;
-}
-.header-left {
-    display: flex;
-    align-items: center;
-}
-.header-left button {
-    margin-right: 10px;
-    width: 100px;
-}
-.header-right span {
-    margin-right: 10px;
-}
-.header-right button {
-    margin-right: 10px;
-    width: 100px;
-}
-
-
-
 .chat-map-wrapper {
     display: flex;
     max-width: 1200px;
