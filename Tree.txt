@@ -1,0 +1,60 @@
+  directory_path = "C:\go"
+|-- capture
+|   |-- 127.0.0.1_8000_.png
+|   |-- 127.0.0.1_8000_accounts_home_.png
+|   |-- 127.0.0.1_8000_accounts_home_login_.png
+|   |-- 127.0.0.1_8000_accounts_signup_.png
+|   |-- 127.0.0.1_8000_admin_accounts_profile_.png
+|   |-- 127.0.0.1_8000_admin_auth_user_.png
+|   |-- 127.0.0.1_8000_index_ (1).png
+|   |-- 127.0.0.1_8000_index_.png
+|   |-- 127.0.0.1_8000_search-history_ (1).png
+|   |-- 127.0.0.1_8000_search-history_.png
+|   |-- 화면 캡처 2024-10-22 172306.png
+|-- notice.py
+|-- requirements.txt
+|-- site
+|   |-- .env
+|   |-- accounts
+|   |   |-- admin.py
+|   |   |-- forms.py
+|   |   |-- models.py
+|   |   |-- templates
+|   |   |   |-- form_errors.html
+|   |   |   |-- login.html
+|   |   |   |-- signup.html
+|   |   |-- urls.py
+|   |   |-- views.py
+|   |-- app
+|   |   |-- admin.py
+|   |   |-- models.py
+|   |   |-- static
+|   |   |   |-- chatbot
+|   |   |   |   |-- api.css
+|   |   |   |   |-- home.css
+|   |   |   |   |-- index.css
+|   |   |   |   |-- load.js
+|   |   |   |   |-- rec.js
+|   |   |   |   |-- script.js
+|   |   |   |   |-- search_history.css
+|   |   |   |   |-- search_history.js
+|   |   |   |   |-- 로고.png
+|   |   |   |   |-- 평택반도체 BOLD.TTF
+|   |   |   |   |-- 평택반도체 REGULAR.TTF
+|   |   |   |   |-- 홈.png
+|   |   |-- templates
+|   |   |   |-- chatbot
+|   |   |   |   |-- home.html
+|   |   |   |   |-- index.html
+|   |   |   |   |-- search_history.html
+|   |   |-- views.py
+|   |-- config
+|   |   |-- settings.py
+|   |   |-- urls.py
+|   |-- db.sqlite3
+|   |-- manage.py
+|   |-- media
+|   |   |-- recordings
+|   |   |   |-- processed_audio.wav
+|   |   |   |-- shared_audio.wav
+|   |-- search_history_db.sqlite3
