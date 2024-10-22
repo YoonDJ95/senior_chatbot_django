@@ -1,16 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const startRecordingButton = document.getElementById('recordingButton');  // 버튼을 찾음
-    const userAddressElement = document.getElementById('userAddress');  // 인식된 텍스트를 출력할 필드
-
-    if (!startRecordingButton || !userAddressElement) {
-        console.error("필수 HTML 요소가 존재하지 않습니다.");
-        return;  // 요소가 없으면 나머지 코드 실행 중지
-    }
+    const recordingButtons = document.querySelectorAll('.recordingButton');  // 모든 녹음 버튼을 선택
 
     let recognition;
     let isRecognizing = false;
+    let activeButton = null;
 
-    // Web Speech API 설정
+    // Web Speech API 지원 여부 확인
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
     } else if ('SpeechRecognition' in window) {
@@ -21,74 +16,83 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    if (recognition) {
-        recognition.lang = 'ko-KR';  // 한국어로 설정
-        recognition.continuous = false;  // 한 번에 한 문장만 인식
-        recognition.interimResults = false;  // 중간 결과 표시 안함
+    recognition.continuous = false;  // 한 번에 한 문장만 인식
+    recognition.interimResults = false;  // 중간 결과 표시 안함
 
-        recognition.onstart = function () {
-            isRecognizing = true;
-            startRecordingButton.textContent = '녹음중';  // 녹음중으로 텍스트 변경
-            startRecordingButton.style.backgroundColor = '#808080';  // 배경색을 회색으로 변경
-            console.log('음성 인식 시작');
-        };
+    // 녹음 버튼에 대해 각각 이벤트 리스너를 설정
+    recordingButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const lang = button.getAttribute('data-lang');  // 버튼의 언어 설정
+            const targetId = button.getAttribute('data-target');  // 텍스트를 출력할 필드의 ID
+            const type = button.getAttribute('data-type');  // 버튼이 숫자 인식을 위한 것인지 확인
+            const targetInput = document.getElementById(targetId);
 
-        recognition.onend = function () {
-            isRecognizing = false;
-            startRecordingButton.textContent = '녹음하기';  // 다시 녹음하기로 변경
-            startRecordingButton.style.backgroundColor = '';  // 원래 색상으로 복귀 (기본값)
-            console.log('음성 인식 종료');
-        };
-
-        // 음성 인식 결과 처리
-        recognition.onresult = function (event) {
-            const transcript = event.results[0][0].transcript;
-            console.log('인식된 텍스트:', transcript);
-
-            // 인식된 텍스트를 userAddress 필드에 출력
-            userAddressElement.value = transcript;
-
-            // 서버로 텍스트 전송 (필요 시)
-            fetch('/save_transcript/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()  // CSRF 토큰 설정
-                },
-                body: JSON.stringify({ recognized_text: transcript })
-            }).then(response => response.json())
-              .then(data => console.log('서버 응답:', data))
-              .catch(error => console.error('서버 전송 중 오류:', error));
-        };
-
-        recognition.onerror = function (event) {
-            console.error('음성 인식 오류:', event.error);
-        };
-
-        // 버튼 클릭 시 음성 인식 시작/중지
-        startRecordingButton.addEventListener('click', function () {
-            if (isRecognizing) {
-                recognition.stop();  // 인식 중이면 중지
-            } else {
-                recognition.start();  // 인식 시작
+            if (!targetInput) {
+                console.error(`ID가 ${targetId}인 텍스트 필드를 찾을 수 없습니다.`);
+                return;
             }
-        });
-    }
 
-    // CSRF 토큰을 가져오는 함수
-    function getCSRFToken() {
-        let cookieValue = null;
-        const name = 'csrftoken';
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+            if (isRecognizing) {
+                recognition.stop();  // 이미 인식 중이면 중지
+                button.textContent = '🎤';  // 녹음 버튼 원래 상태로
+                button.style.backgroundColor = '';
+            } else {
+                recognition.lang = lang;  // 버튼에 설정된 언어로 음성 인식
+                recognition.start();
+                button.textContent = '🎤 녹음중...';
+                button.style.backgroundColor = '#808080';  // 녹음 중일 때 버튼 색상 변경
+                activeButton = button;
+            }
+
+            // 음성 인식 시작 시
+            recognition.onstart = function () {
+                isRecognizing = true;
+                console.log('음성 인식 시작');
+            };
+
+            // 음성 인식 종료 시
+            recognition.onend = function () {
+                isRecognizing = false;
+                if (activeButton) {
+                    activeButton.textContent = '🎤';
+                    activeButton.style.backgroundColor = '';
                 }
+                console.log('음성 인식 종료');
+            };
+
+            // 음성 인식 결과 처리
+            recognition.onresult = function (event) {
+                let transcript = event.results[0][0].transcript;
+
+                // 숫자만 추출하는 경우
+                if (type === 'numeric') {
+                    transcript = transcript.replace(/[^0-9]/g, '');  // 숫자 외의 문자는 제거
+                }
+
+                targetInput.value = transcript;  // 인식된 텍스트를 해당 필드에 출력
+            };
+
+            recognition.onerror = function (event) {
+                console.error('음성 인식 오류:', event.error);
+            };
+        });
+    });
+});
+
+
+// CSRF 토큰을 가져오는 함수
+function getCSRFToken() {
+    let cookieValue = null;
+    const name = 'csrftoken';
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
     }
-});
+    return cookieValue;
+}
