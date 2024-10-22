@@ -1,110 +1,81 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let isRecording = false;
-    let mediaRecorder;
-    let audioChunks = [];  // 녹음된 오디오 데이터를 저장할 배열
+    const startRecordingButton = document.getElementById('recordingButton');  // 버튼을 찾음
+    const userAddressElement = document.getElementById('userAddress');  // 인식된 텍스트를 출력할 필드
 
-    const toggleRecordingButton = document.getElementById('recordingButton');
-    const userAddressElement = document.getElementById('userAddress');
+    if (!startRecordingButton || !userAddressElement) {
+        console.error("필수 HTML 요소가 존재하지 않습니다.");
+        return;  // 요소가 없으면 나머지 코드 실행 중지
+    }
 
-    if (!userAddressElement) {
-        console.error('userAddress 요소를 찾을 수 없습니다.');
+    let recognition;
+    let isRecognizing = false;
+
+    // Web Speech API 설정
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+    } else if ('SpeechRecognition' in window) {
+        recognition = new SpeechRecognition();
+    } else {
+        console.error('이 브라우저는 Web Speech API를 지원하지 않습니다.');
+        alert('Web Speech API를 지원하지 않는 브라우저입니다.');
         return;
     }
 
-    // 녹음 시작/중지 버튼 클릭 시 실행
-    toggleRecordingButton.addEventListener('click', function () {
-        if (!isRecording) {
-            startRecording();
-        } else {
-            stopRecording();
-        }
-    });
+    if (recognition) {
+        recognition.lang = 'ko-KR';  // 한국어로 설정
+        recognition.continuous = false;  // 한 번에 한 문장만 인식
+        recognition.interimResults = false;  // 중간 결과 표시 안함
 
-    // 녹음 시작 함수
-    function startRecording() {
-        console.log("녹음 시작 중...");
-        audioChunks = [];  // 이전 녹음 데이터 초기화
-        userAddressElement.value = "";  // 기존 텍스트 지우기
+        recognition.onstart = function () {
+            isRecognizing = true;
+            startRecordingButton.textContent = '녹음중';  // 녹음중으로 텍스트 변경
+            startRecordingButton.style.backgroundColor = '#808080';  // 배경색을 회색으로 변경
+            console.log('음성 인식 시작');
+        };
 
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                isRecording = true;
+        recognition.onend = function () {
+            isRecognizing = false;
+            startRecordingButton.textContent = '녹음하기';  // 다시 녹음하기로 변경
+            startRecordingButton.style.backgroundColor = '';  // 원래 색상으로 복귀 (기본값)
+            console.log('음성 인식 종료');
+        };
 
-                console.log("녹음이 시작되었습니다.");
-                toggleRecordingButton.textContent = "녹음 중";
-                toggleRecordingButton.classList.add("recording");
+        // 음성 인식 결과 처리
+        recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript;
+            console.log('인식된 텍스트:', transcript);
 
-                mediaRecorder.addEventListener('dataavailable', event => {
-                    audioChunks.push(event.data);
-                });
+            // 인식된 텍스트를 userAddress 필드에 출력
+            userAddressElement.value = transcript;
 
-                mediaRecorder.addEventListener('stop', () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    console.log("녹음이 중지되었습니다. 오디오 데이터를 서버로 전송 중...");
+            // 서버로 텍스트 전송 (필요 시)
+            fetch('/save_transcript/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()  // CSRF 토큰 설정
+                },
+                body: JSON.stringify({ recognized_text: transcript })
+            }).then(response => response.json())
+              .then(data => console.log('서버 응답:', data))
+              .catch(error => console.error('서버 전송 중 오류:', error));
+        };
 
-                    sendAudioToServer(audioBlob);
-                    toggleRecordingButton.textContent = "녹음하기";
-                    toggleRecordingButton.classList.remove("recording");
-                });
-            })
-            .catch(error => {
-                console.error('마이크 접근 중 오류 발생:', error);
-            });
+        recognition.onerror = function (event) {
+            console.error('음성 인식 오류:', event.error);
+        };
+
+        // 버튼 클릭 시 음성 인식 시작/중지
+        startRecordingButton.addEventListener('click', function () {
+            if (isRecognizing) {
+                recognition.stop();  // 인식 중이면 중지
+            } else {
+                recognition.start();  // 인식 시작
+            }
+        });
     }
 
-    // 녹음 중지 함수
-    function stopRecording() {
-        if (mediaRecorder && isRecording) {
-            mediaRecorder.stop();
-            isRecording = false;
-            console.log("녹음이 중지되었습니다.");
-        } else {
-            console.log("녹음 중지 요청 시점에 녹음이 진행 중이지 않았습니다.");
-        }
-    }
-
-    // 서버로 오디오 데이터를 전송하는 함수
-    function sendAudioToServer(audioBlob) {
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'recording.wav');
-
-        console.log("서버로 오디오 데이터를 보내는 중...");
-
-        fetch(toggleRecordingUrl, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: formData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    console.error('서버 응답 실패:', response.statusText);
-                    throw new Error('서버 응답 실패');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.recognized_text) {
-                    console.log("서버 응답 데이터:", data.recognized_text);
-                    userAddressElement.value = data.recognized_text;
-                } else if (data.error) {
-                    console.error("서버 오류 응답:", data.error);
-                    userAddressElement.value = "인식 오류: " + data.error;
-                } else {
-                    console.error("서버 응답 데이터가 없습니다.");
-                    userAddressElement.value = "텍스트 인식에 실패했습니다.";
-                }
-            })
-            .catch(error => {
-                console.error('오디오 전송 중 오류 발생:', error);
-                userAddressElement.value = "서버 오류 발생: " + error.message;
-            });
-    }
-
-    // CSRF 토큰 가져오는 함수
+    // CSRF 토큰을 가져오는 함수
     function getCSRFToken() {
         let cookieValue = null;
         const name = 'csrftoken';

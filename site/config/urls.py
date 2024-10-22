@@ -35,5 +35,6 @@ urlpatterns = [
     path('save-search-history/', views.save_search_history, name='save_search_history'),
     path('search-history/', views.search_history, name='search_history'),
     path('clear-search-history/', views.clear_search_history, name='clear_search_history'),
-    path('toggle-recording/', views.toggle_recording, name='toggle_recording'), 
+    path('save_transcript/', views.save_transcript, name='save_transcript'),
+    path('toggle_recording/', views.toggle_recording, name='toggle_recording'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
