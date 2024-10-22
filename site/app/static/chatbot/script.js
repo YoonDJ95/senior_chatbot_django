@@ -117,8 +117,8 @@ function sendMessage() {
 }
 
 // JSON 데이터를 HTML로 변환
-const prettyJson = JSON.stringify(jsonResponse, null, 2); // Pretty print 적용
-console.log(prettyJson);
+/*const prettyJson = JSON.stringify(jsonResponse, null, 2); // Pretty print 적용
+console.log(prettyJson);*/
 
 
 function updateSearchHistoryDisplay() {

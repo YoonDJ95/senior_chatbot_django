@@ -49,7 +49,13 @@ LOGGING = {
     },
 }
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB (10 * 1024 * 1024)
 
+MEDIA_URL = '/media/'  # URL 경로
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 실제 파일이 저장되는 경로
+
+# media 디렉토리 내의 recordings 폴더가 존재하는지 확인하거나 자동으로 생성
+os.makedirs(os.path.join(MEDIA_ROOT, 'recordings'), exist_ok=True)
 
 ALLOWED_HOSTS = []
 # KAKAO API 설정

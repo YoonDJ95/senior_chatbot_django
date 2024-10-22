@@ -21,6 +21,8 @@ from django.urls import path
 from app.views import chatbot_response, index, get_kakao_api_key, job_detail_view,home  # 새로운 뷰 추가
 from django.urls import path, include
 from app import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,4 +35,5 @@ urlpatterns = [
     path('save-search-history/', views.save_search_history, name='save_search_history'),
     path('search-history/', views.search_history, name='search_history'),
     path('clear-search-history/', views.clear_search_history, name='clear_search_history'),
-]
+    path('toggle-recording/', views.toggle_recording, name='toggle_recording'), 
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

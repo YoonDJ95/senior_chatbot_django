@@ -1,130 +1,128 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>일자리 찾기 챗봇</title>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/index.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/api.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/index.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot/api.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8371fd535d5d33dfcec6e7f3cdce0d5a"></script>
-
+    <script>
+        // Django 템플릿에서 미리 이미지 경로를 계산
+        const recOnImageUrl = "{% static 'chatbot/rec_on.png' %}";
+        const recOffImageUrl = "{% static 'chatbot/rec_off.png' %}";
+        const toggleRecordingUrl = "{% url 'toggle_recording' %}";
+        const indexUrl = "{% url 'chatbot_index' %}" // 'index' URL 미리 계산
+    </script>
     <style>
-        @font-face {
-                font-family: 'myfont';
-                src: url("{% static 'chatbot/평택반도체 BOLD.TTF' %}") format('truetype');
-        }
-
-        body {
-            overflow: hidden;
-        }
-        header {
-            background-color: #f8f9fa;
-            padding: 15px;
-            position: sticky;
-            top: 0;
-            width: 97.5vw;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        .header-left button {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 10px;
-            width: 100px;
-        }
-        .header-right span {
-            margin-right: 10px;
-        }
-        .header-right button {
-            margin-right: 10px;
-            width: 100px;
-        }
-        #imghome{
-            margin-left: 3px;
-            margin-right: 5px;
-            width: 20px;
-            height: 20px;
-        }
+      body {
+        font-family: 'PyeongtaekSemiconductorBold', sans-serif;
+      }
+      header {
+        background-color: #f8f9fa;
+        padding: 15px;
+        position: sticky;
+        top: 0;
+        width: 97.5vw;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+      .header-left button {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 10px;
+        width: 100px;
+      }
+      .header-right span {
+        margin-right: 10px;
+      }
+      .header-right button {
+        margin-right: 10px;
+        width: 100px;
+      }
+      #imghome {
+        margin-left: 3px;
+        margin-right: 5px;
+        width: 20px;
+        height: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="header-left">
-            <button onclick="location.href='{% url 'home' %}'" class="btn-home"><img src="{% static 'chatbot/홈.png' %}" alt="home" id="imghome" />홈으로</button>
-        </div>
-        <div class="header-right">
-            {% if user.is_authenticated %}
-                <span>안녕하세요, {{ user.username }}님!</span>
-                {% if user.is_authenticated %}
-                <button onclick="location.href='{% url 'search_history' %}'">검색 기록</button>
-                {% endif %}
-                <button onclick="location.href='{% url 'logout' %}'" class="btn-logout">로그아웃</button>
-            {% else %}
-                <button onclick="location.href='{% url 'login' %}'" class="btn-login">로그인</button>
-            {% endif %}
-        </div>
+      <div class="header-left">
+        <button onclick="location.href='{% url 'home' %}'" class="btn-home"><img src="{% static 'chatbot/홈.png' %}" alt="home" id="imghome" />홈으로</button>
+      </div>
+      <div class="header-right">
+        {% if user.is_authenticated %}
+          <span>안녕하세요, {{ user.username }}님!</span>
+          {% if user.is_authenticated %}
+            <button onclick="location.href='{% url 'search_history' %}'">검색 기록</button>
+          {% endif %}
+          <button onclick="location.href='{% url 'logout' %}'" class="btn-logout">로그아웃</button>
+        {% else %}
+          <button onclick="location.href='{% url 'login' %}'" class="btn-login">로그인</button>
+        {% endif %}
+      </div>
     </header>
     <h1>채용 정보 및 장소 검색 도우미</h1>
     <div class="chat-map-wrapper">
-        <div id="chat-con"><div id="chat-container"></div>
-            <div class="input-area">
-                <input type="text" id="userAddress" class="user-Message" placeholder="거주하는 주소를 입력하세요">
-                <button onclick="sendMessage()">전송</button>
-            </div>
-        </div>
+      <div id="chat-con">
+        <div id="chat-container"></div>
+        <div class="input-area">
+          <input type="text" id="userAddress" class="user-Message" value="{{ recognized_text }}" placeholder="거주하는 주소를 입력하세요" />
+          <button onclick="sendMessage()">전송</button>
 
-        <div class="map_wrap">
-            <div id="mapWrapper">
-                <div id="map"></div> <!-- 지도를 표시할 div 입니다 -->
-            </div>
-            <div id="rvWrapper">
-                <div id="roadview"></div> <!-- 로드뷰를 표시할 div 입니다 -->
-            </div>
+          <!-- 녹음 시작/중지 버튼 -->
+          <button id="recordingButton"  class="record-btn">녹음하기</button>
         </div>
+      </div>
+
+      <div class="map_wrap">
+        <div id="mapWrapper">
+          <div id="map"></div> <!-- 지도를 표시할 div 입니다 -->
+        </div>
+        <div id="rvWrapper">
+          <div id="roadview"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+        </div>
+      </div>
     </div>
     <div class="api-banner">
-        <p>본 프로젝트에는 다음의 API를 활용했습니다:</p>
-        <a href="https://www.bigdata-map.kr/search/86750961" class="api-button" target="_blank">
-            통합 데이터 지도 API
-        </a>
-        <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">
-            카카오맵 로드뷰 API
-        </a>
-        <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button" target="_blank">
-            카카오맵 주소 검색 API
-        </a>
+      <p>본 프로젝트에는 다음의 API를 활용했습니다:</p>
+      <a href="https://www.bigdata-map.kr/search/86750961" class="api-button" target="_blank">통합 데이터 지도 API</a>
+      <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">카카오맵 로드뷰 API</a>
+      <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button" target="_blank">카카오맵 주소 검색 API</a>
     </div>
-    
+
     <script type="text/javascript">
-        // CSRF 토큰을 가져오는 함수 정의
-        const csrftoken = getCookie('csrftoken');
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Check if this cookie string begins with the given name
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+      // CSRF 토큰을 가져오는 함수 정의
+      const csrftoken = getCookie('csrftoken')
+      function getCookie(name) {
+        let cookieValue = null
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';')
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim()
+            // Check if this cookie string begins with the given name
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+              break
             }
-            return cookieValue;
+          }
         }
-        
+        return cookieValue
+      }
     </script>
     <script src="{% static 'chatbot/script.js' %}"></script> <!-- 스크립트 파일 로드 -->
     <script src="{% static 'chatbot/load.js' %}"></script> <!-- 스크립트 파일 로드 -->
-
-</body>
+    <script src="{% static 'chatbot/rec.js' %}"></script>
+  </body>
 </html>

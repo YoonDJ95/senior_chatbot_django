@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'myfont';
+    src: url('/static/chatbot/평택반도체 BOLD.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     font-family: 'myfont', sans-serif;
     background-color: #f9f9f9;
@@ -14,30 +21,56 @@ h1 {
     display: flex;
     max-width: 1200px;
     margin: 20px auto;
-    justify-content: space-between; /* 좌우로 요소 나열 */
+    justify-content: space-between;
+    /* 좌우로 요소 나열 */
 }
 
 #chat-con {
     font-family: 'myfont', sans-serif;
     position: relative;
     display: flex;
-    flex-direction: row; /* 가로 방향으로 변경 */
-    flex: 1; /* 챗봇이 좌측에 위치하며, 전체의 50% 차지 */
+    flex-direction: row;
+    /* 가로 방향으로 변경 */
+    flex: 1;
+    /* 챗봇이 좌측에 위치하며, 전체의 50% 차지 */
     margin-right: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background: white;
-    height: 850px; /* 고정 높이 */
-    overflow: hidden; /* 스크롤바 숨김 */
+    height: 850px;
+    /* 고정 높이 */
+    overflow: hidden;
+    /*숨김을 제거 */
 }
 
 #chat-container {
     flex-grow: 1;
-    overflow-y: auto; /* 스크롤 가능하게 설정 */
+    overflow-y: auto;
+    /* 스크롤 가능하게 설정 */
     padding: 10px;
-    box-sizing: content-box; /* 패딩을 높이에 포함하지 않도록 설정 */
-    height: calc(100% - 50px); /* 입력 영역의 높이를 제외한 높이 설정 */
+    box-sizing: content-box;
+    /* 패딩을 높이에 포함하지 않도록 설정 */
+    height: calc(100% - 50px);
+    /* 입력 영역의 높이를 제외한 높이 설정 */
 }
+
+/* 반응형 디자인: 화면 크기가 작아질 때 */
+@media (max-width: 768px) {
+    #chat-con {
+        height: 100vh;
+        /* 화면의 100% 높이 사용 */
+    }
+
+    #chat-container {
+        height: calc(100% - 100px);
+        /* 모바일에서는 입력 영역 높이를 고려하여 적절히 조정 */
+        max-height: 100%;
+        /* 최대 높이를 설정하여 스크롤 가능 */
+        overflow-y: auto;
+        /* 스크롤 가능하게 유지 */
+    }
+}
+
 
 
 .message {
@@ -52,14 +85,16 @@ h1 {
     font-family: 'myfont', sans-serif;
     background-color: #9fccffb9;
     text-align: right;
-    margin-left: 50px; /* 사용자 메시지 위치 조정 */
+    margin-left: 50px;
+    /* 사용자 메시지 위치 조정 */
 }
 
 .bot-message {
     font-family: 'myfont', sans-serif;
     background-color: #e2e3e5;
     text-align: left;
-    margin-right: 50px; /* 챗봇 메시지 위치 조정 */
+    margin-right: 50px;
+    /* 챗봇 메시지 위치 조정 */
 }
 
 .place-card {
@@ -88,7 +123,7 @@ h1 {
     margin-top: 10px;
     position: absolute;
     bottom: 0;
-    width: 100%;
+    width: 98%;
     display: flex;
     align-items: center;
     padding: 10px;
@@ -140,22 +175,50 @@ button:hover {
 /* 지도와 로드뷰 영역 */
 .map_wrap {
     display: flex;
-    flex-direction: column; /* 지도와 로드뷰를 세로로 나열 */
-    width: 40%; /* 우측에 배치되도록 조정 */
-    height:1000px;
+    flex-direction: column;
+    /* 지도와 로드뷰를 세로로 나열 */
+    width: 40%;
+    /* 우측에 배치되도록 조정 */
+    height: 1000px;
 }
 
 #mapWrapper {
-    height: 400px; /* 지도 높이 조정 */
+    height: 400px;
+    /* 지도 높이 조정 */
     width: 100%;
 }
 
 #rvWrapper {
-    height: 400px; /* 로드뷰 높이 조정 */
+    height: 400px;
+    /* 로드뷰 높이 조정 */
     width: 100%;
 }
 
-#map, #roadview {
+#map,
+#roadview {
     width: 100%;
     height: 100%;
 }
+
+.record-btn {
+    background-color: #FF9800; /* 기본 배경색: 주황색 (녹음 시작 상태) */
+    color: white; /* 텍스트 색상: 흰색 */
+    text-align: center;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .record-btn.recording {
+    background-color: #BDBDBD; /* 녹음 중 배경색: 회색 */
+  }
+
+  .record-btn:hover {
+    opacity: 0.9; /* 호버 시 투명도 조절 */
+  }
+
+  .record-btn:active {
+    background-color: #757575; /* 클릭 시 배경색: 진한 회색 */
+  }

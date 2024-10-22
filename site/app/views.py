@@ -5,7 +5,15 @@ from django.shortcuts import render, redirect
 import xml.etree.ElementTree as ET
 import math
 from datetime import datetime
-
+import sounddevice as sd
+import numpy as np
+import wavio
+import threading
+import urllib3
+import json
+import base64
+import time
+import os
 
 # 위도와 경도를 이용하여 두 지점 사이의 거리를 계산하는 함수
 def calculate_distance(lat1, lng1, lat2, lng2):
@@ -285,8 +293,7 @@ def parse_user_input(user_input):
     return title, employment_type, workplace
 
 # 메인 페이지 렌더링
-def index(request):
-    return render(request, 'chatbot/index.html')
+
 def home(request):
     return render(request, 'chatbot/home.html')  # home.html을 렌더링
 # 카카오 API 키를 반환하는 함수
@@ -340,3 +347,115 @@ def clear_search_history(request):
         SearchHistory.objects.filter(user=request.user).delete()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+
+# 녹음 상태를 위한 변수
+recording = False
+audio_thread = None
+
+# 텍스트 결과를 위한 변수 초기화
+recognized_text = ""
+
+# 오디오 녹음 함수
+def record_audio(filename):
+    fs = 16000  # 샘플링 주파수 (기본적으로 16000Hz가 적당)
+    audio = []
+
+    while recording:
+        audio_chunk = sd.rec(int(1 * fs), samplerate=fs, channels=1, dtype='int16')
+        sd.wait()  # 녹음이 끝날 때까지 대기
+        audio.append(audio_chunk)
+
+    if audio:
+        audio = np.concatenate(audio)
+        # 압축된 오디오 파일을 저장하기
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        wavio.write(filename, audio, fs, sampwidth=2)  # 16비트 (2바이트)로 저장
+        print(f"새 녹음 파일 저장됨: {filename}")
+
+
+def recognize_audio(filename):
+    openApiURL = "http://aiopen.etri.re.kr:8000/WiseASR/Recognition"
+    accessKey = "b92eed7e-628c-4be3-8794-f0c874d8f769"
+    languageCode = "korean"
+
+    if not os.path.exists(filename):
+        print(f"파일이 존재하지 않습니다: {filename}")
+        return "녹음 파일이 존재하지 않습니다."
+
+    with open(filename, "rb") as file:
+        audioContents = base64.b64encode(file.read()).decode("utf8")
+
+    requestJson = {
+        "argument": {
+            "language_code": languageCode,
+            "audio": audioContents
+        }
+    }
+
+    http = urllib3.PoolManager()
+
+    try:
+        response = http.request(
+            "POST",
+            openApiURL,
+            headers={"Content-Type": "application/json; charset=UTF-8", "Authorization": accessKey},
+            body=json.dumps(requestJson)
+        )
+
+        response_data = json.loads(response.data.decode("utf-8"))
+        if "return_object" in response_data and "recognized" in response_data["return_object"]:
+            recognized_text = response_data["return_object"]["recognized"]
+            # 끝에 마침표가 있으면 제거
+            if recognized_text.endswith('.'):
+                recognized_text = recognized_text[:-1]
+            print(f"인식된 텍스트: {recognized_text}")
+            return recognized_text
+        else:
+            print(f"오류 발생: {response_data}")
+            return response_data.get("reason", "텍스트 인식 중 오류가 발생했습니다.")
+
+    except Exception as e:
+        print(f"음성 인식 API 호출 중 오류 발생: {e}")
+        return f"음성 인식 API 호출 중 오류가 발생했습니다: {e}"
+
+
+# Django 뷰 함수
+def toggle_recording(request):
+    global recording, audio_thread, recognized_text
+
+    audio_file_path = os.path.join(settings.MEDIA_ROOT, 'recordings', 'shared_audio.wav')
+
+    if request.method == 'POST':
+        if recording:  # 녹음 중인 경우 중지
+            recording = False
+            time.sleep(1)  # 녹음 완료 후 잠시 대기
+            recognized_text = recognize_audio(audio_file_path)  # 인식된 텍스트 반환
+            return JsonResponse({'recognized_text': recognized_text})
+        else:  # 녹음 시작
+            recording = True
+            recognized_text = ""  # 기존 내용 초기화 (재녹음)
+            if audio_thread is None or not audio_thread.is_alive():
+                audio_thread = threading.Thread(target=record_audio, args=(audio_file_path,))
+                audio_thread.start()
+            return JsonResponse({'status': '녹음 중...'})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+# Django index 뷰 함수
+def index(request):
+    global recording, audio_thread, recognized_text
+
+    if request.method == 'POST':
+        if 'start_recording' in request.POST:
+            recording = True
+            if audio_thread is None or not audio_thread.is_alive():
+                audio_thread = threading.Thread(target=record_audio, args=("shared_audio.wav",))
+                audio_thread.start()
+            recognized_text = "녹음 중..."
+        elif 'stop_recording' in request.POST:
+            recording = False
+            time.sleep(1)  # 녹음 완료 후 잠시 대기
+            recognized_text = recognize_audio("shared_audio.wav")
+
+    return render(request, 'chatbot/index.html', {'recognized_text': recognized_text})
