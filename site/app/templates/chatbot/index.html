@@ -10,6 +10,14 @@
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8371fd535d5d33dfcec6e7f3cdce0d5a"></script>
 
     <style>
+        @font-face {
+                font-family: 'myfont';
+                src: url("{% static 'chatbot/평택반도체 BOLD.TTF' %}") format('truetype');
+        }
+
+        body {
+            overflow: hidden;
+        }
         header {
             background-color: #f8f9fa;
             padding: 15px;
@@ -27,6 +35,8 @@
             align-items: center;
         }
         .header-left button {
+            display: inline-flex;
+            align-items: center;
             margin-right: 10px;
             width: 100px;
         }
@@ -37,13 +47,18 @@
             margin-right: 10px;
             width: 100px;
         }
+        #imghome{
+            margin-left: 3px;
+            margin-right: 5px;
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
     <header>
-        <!-- 로그인 상태 및 홈으로 가기 버튼 배치 -->
         <div class="header-left">
-            <button onclick="location.href='{% url 'home' %}'" class="btn-home">홈으로</button>
+            <button onclick="location.href='{% url 'home' %}'" class="btn-home"><img src="{% static 'chatbot/홈.png' %}" alt="home" id="imghome" />홈으로</button>
         </div>
         <div class="header-right">
             {% if user.is_authenticated %}
@@ -57,13 +72,14 @@
             {% endif %}
         </div>
     </header>
-    <h1>채용 정보 및 장소 검색 챗봇</h1>
+    <h1>채용 정보 및 장소 검색 도우미</h1>
     <div class="chat-map-wrapper">
-        <div><div id="chat-container"></div>
-        <div class="input-area">
-            <input type="text" id="userAddress" class="user-Message" placeholder="거주하는 주소를 입력하세요">
-            <button onclick="sendMessage()">전송</button>
-        </div></div>
+        <div id="chat-con"><div id="chat-container"></div>
+            <div class="input-area">
+                <input type="text" id="userAddress" class="user-Message" placeholder="거주하는 주소를 입력하세요">
+                <button onclick="sendMessage()">전송</button>
+            </div>
+        </div>
 
         <div class="map_wrap">
             <div id="mapWrapper">

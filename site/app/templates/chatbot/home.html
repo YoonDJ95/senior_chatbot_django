@@ -7,12 +7,16 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'chatbot/home.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'chatbot/api.css' %}">
+    <style>
+        @font-face {
+            font-family: 'myfont';
+            src: url("{% static 'chatbot/평택반도체 REGULAR.TTF' %}") format('truetype');
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>환영합니다!</h1>
-
-        <!-- 메시지 표시 -->
+        <img src="{% static 'chatbot/로고.png' %}" width="300" height="250"/>
         {% if messages %}
         <ul>
             {% for message in messages %}
@@ -31,8 +35,9 @@
             {% if user.is_staff %}
                 <button onclick="location.href='{% url 'admin:index' %}'">관리자 페이지로 이동</button>
             {% endif %}
-        {% else %}
-            <p>로그인하지 않은 상태입니다. 아래 버튼을 클릭해 로그인 또는 회원가입을 진행하세요:</p>
+        {% else %}<br><br>
+            <p style="color: gray;">로그인하지 않은 상태입니다. 아래 버튼을 클릭해 로그인<br>
+                또는 회원가입을 진행하세요.</p>
             <button onclick="location.href='{% url 'signup' %}'">회원가입</button>
             <button onclick="location.href='{% url 'login' %}'">로그인</button>
         {% endif %}

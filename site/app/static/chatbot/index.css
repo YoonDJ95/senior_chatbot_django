@@ -1,10 +1,11 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'myfont', sans-serif;
     background-color: #f9f9f9;
     margin: 0;
 }
 
 h1 {
+    font-family: 'myfont', sans-serif;
     text-align: center;
     color: #333;
 }
@@ -16,18 +17,31 @@ h1 {
     justify-content: space-between; /* 좌우로 요소 나열 */
 }
 
-#chat-container {
+#chat-con {
+    font-family: 'myfont', sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: row; /* 가로 방향으로 변경 */
     flex: 1; /* 챗봇이 좌측에 위치하며, 전체의 50% 차지 */
     margin-right: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background: white;
-    padding: 20px;
-    overflow-y: auto;
-    height: 800px; /* 고정 높이 */
+    height: 850px; /* 고정 높이 */
+    overflow: hidden; /* 스크롤바 숨김 */
 }
 
+#chat-container {
+    flex-grow: 1;
+    overflow-y: auto; /* 스크롤 가능하게 설정 */
+    padding: 10px;
+    box-sizing: content-box; /* 패딩을 높이에 포함하지 않도록 설정 */
+    height: calc(100% - 50px); /* 입력 영역의 높이를 제외한 높이 설정 */
+}
+
+
 .message {
+    font-family: 'myfont', sans-serif;
     margin-bottom: 15px;
     padding: 10px;
     border-radius: 10px;
@@ -35,18 +49,21 @@ h1 {
 }
 
 .user-message {
-    background-color: #d1e7dd;
+    font-family: 'myfont', sans-serif;
+    background-color: #9fccffb9;
     text-align: right;
     margin-left: 50px; /* 사용자 메시지 위치 조정 */
 }
 
 .bot-message {
+    font-family: 'myfont', sans-serif;
     background-color: #e2e3e5;
     text-align: left;
     margin-right: 50px; /* 챗봇 메시지 위치 조정 */
 }
 
 .place-card {
+    font-family: 'myfont', sans-serif;
     background: #e9ecef;
     padding: 10px;
     margin: 5px 0;
@@ -54,6 +71,7 @@ h1 {
 }
 
 .place-name {
+    font-family: 'myfont', sans-serif;
     font-weight: bold;
     color: #007bff;
 }
@@ -65,10 +83,15 @@ h1 {
     margin-top: 5px;
 }
 
-/* Input 및 버튼 스타일 */
 .input-area {
     text-align: left;
     margin-top: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
 }
 
 input[type="text"] {
