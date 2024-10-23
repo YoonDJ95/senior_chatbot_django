@@ -67,7 +67,7 @@
                     <h4 class="mt-4"><label for="id_full_name" class="form-label">성명</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_full_name" name="full_name"
-                            value="{{ form.full_name.value|default_if_none:'' }}" placeholder="성명을 입력하세요" />
+                            value="{{ resume.full_name }}" placeholder="성명을 입력하세요" />
                         <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
                             data-target="id_full_name">🎤</button>
                     </div>
