@@ -86,9 +86,9 @@
                     <h4 class="mt-4"><label for="id_email_id" class="form-label">이메일</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_email_id" name="email_id"
-                            value="{{ email_id }}" placeholder="이메일 아이디 입력" />
+                            value="{{ email_id }}" disabled placeholder="이메일 아이디 입력" />
                         <span class="input-group-text">@</span>
-                        <select class="form-select" id="id_email_domain" name="email_domain">
+                        <select class="form-select" id="id_email_domain" name="email_domain" disabled>
                             <option value="">도메인 선택</option>
                             <option value="gmail.com" {% if email_domain == "gmail.com" %}selected{% endif %}>gmail.com</option>
                             <option value="naver.com" {% if email_domain == "naver.com" %}selected{% endif %}>naver.com</option>
