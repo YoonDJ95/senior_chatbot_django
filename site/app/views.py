@@ -385,3 +385,122 @@ def index(request):
 
     # 클라이언트에서 음성 인식을 처리하도록 index.html을 렌더링
     return render(request, 'chatbot/index.html')
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Resume, Education, Experience
+from accounts.models import Profile
+from .forms import ResumeForm
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+
+
+@login_required
+def resume_view(request):
+    user = request.user
+    print(f"로그인된 사용자: {user.username}")  # 사용자 정보 확인 로그
+
+    # 이력서 가져오기 또는 새로 생성
+    resume, created = Resume.objects.get_or_create(user=user)
+    print(f"이력서 생성 여부: {created}")  # 이력서가 새로 생성되었는지 여부 로그
+    print(f"이력서 데이터: {resume}")  # 이력서 데이터 로그
+
+    # 프로필 데이터 가져오기
+    try:
+        profile = Profile.objects.get(user=user)
+        print(f"프로필 데이터: {profile.phone_number}, {profile.address}, {profile.detailed_address}")  # 추가 로그
+    except Profile.DoesNotExist:
+        profile = None
+        print("프로필이 존재하지 않음.")  # 프로필이 없을 때 로그
+
+    if request.method == 'POST':
+        # 이메일 처리: email_id와 email_domain을 각각 가져와 합친 후 저장
+        email_id = request.POST.get('email_id', '')
+        email_domain = request.POST.get('email_domain', '')
+        full_email = f"{email_id}@{email_domain}" if email_domain else email_id
+        
+        form = ResumeForm(request.POST, instance=resume)
+        if form.is_valid():
+            resume = form.save(commit=False)
+            resume.user = user
+            resume.email = full_email  # 이메일을 합쳐서 저장
+            resume.save()
+            print("이력서 저장 완료.")  # 이력서 저장 완료 로그
+
+            # 기존 학력 및 경력 삭제
+            Education.objects.filter(resume=resume).delete()
+            Experience.objects.filter(resume=resume).delete()
+
+            # 학력 데이터 저장
+            # 학력 데이터 저장
+            education_data = request.POST.getlist('education[]')
+            education_period_data = request.POST.getlist('education_period[]')
+            education_grade_data = request.POST.getlist('education_grade[]')
+            education_major_data = request.POST.getlist('education_major[]')  # 전공 데이터 추가
+
+            for i in range(len(education_data)):
+                if i < len(education_period_data) and i < len(education_grade_data) and i < len(education_major_data):  # 길이 체크
+                    if education_data[i]:  # 학력 정보가 입력된 경우만 저장
+                        Education.objects.create(
+                            resume=resume,
+                            school=education_data[i],
+                            period=education_period_data[i],
+                            grade=education_grade_data[i],
+                            major=education_major_data[i]  # 전공 저장
+                        )
+
+            # 경력 데이터 저장
+            experience_company_data = request.POST.getlist('experience_company[]')
+            experience_period_data = request.POST.getlist('experience_period[]')
+            experience_position_data = request.POST.getlist('experience_position[]')
+            experience_role_data = request.POST.getlist('experience_role[]')
+            
+            min_experience_length = min(len(experience_company_data), len(experience_period_data), len(experience_position_data), len(experience_role_data))
+            
+            for i in range(min_experience_length):
+                if experience_company_data[i]:  # 경력 정보가 입력된 경우만 저장
+                    Experience.objects.create(
+                        resume=resume,
+                        company=experience_company_data[i],
+                        period=experience_period_data[i],
+                        position=experience_position_data[i],
+                        role=experience_role_data[i]
+                    )
+
+            return redirect('resume_success')  # 성공 페이지로 리다이렉트
+        else:
+            print("폼이 유효하지 않음.")  # 폼 유효성 검사 실패 로그
+            print(form.errors)  # 폼 오류 로그
+    else:
+        form = ResumeForm(instance=resume)
+
+        # 프로필 데이터로 이력서 필드 값 설정
+        if profile:
+            form.fields['full_name'].initial = f"{user.last_name} {user.first_name}" if user.last_name or user.first_name else ''
+            form.fields['email'].initial = user.email if user.email else ''
+            form.fields['phone_number'].initial = profile.phone_number if profile.phone_number else ''
+            form.fields['address'].initial = profile.address if profile.address else ''
+            form.fields['detailed_address'].initial = profile.detailed_address if profile.detailed_address else ''
+            print("프로필 데이터로 이력서 초기값 설정 완료.")  # 이력서 초기값 설정 완료 로그
+
+    print("이력서 페이지 렌더링 중.")  # 페이지 렌더링 로그
+    return render(request, 'chatbot/resume.html', {'form': form, 'resume': resume, 'profile': profile})
+
+
+
+@login_required
+def resume_success(request):
+    # 이력서 객체를 가져오기
+    resume = Resume.objects.get(user=request.user)
+
+    # 교육 데이터 가져오기
+    education_data = resume.education_set.all()
+    experience_data = resume.experience_set.all()
+
+    # 템플릿에 데이터 전달
+    return render(request, 'chatbot/resume_success.html', {
+        'resume': resume,
+        'education_data': education_data,
+        'experience_data': experience_data,
+    })

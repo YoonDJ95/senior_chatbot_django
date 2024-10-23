@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +15,10 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <img src="{% static 'chatbot/로고.png' %}" width="300" height="250" style="margin-top: 100px;"/>
+        <img src="{% static 'chatbot/로고.png' %}" width="300" height="250" style="margin-top: 100px;" />
         {% if messages %}
         <ul>
             {% for message in messages %}
@@ -27,19 +29,22 @@
 
         <!-- 로그인 여부에 따른 다른 콘텐츠 표시 -->
         {% if user.is_authenticated %}<br><br><br><br><br><br><br><br>
-            <p>안녕하세요, {{ user.username }}님!</p>
-            <button onclick="location.href='{% url 'logout' %}'">로그아웃</button>
-            <button onclick="location.href='{% url 'chatbot_index' %}'">일자리 찾기</button>
+        <p>안녕하세요, {{ user.username }}님!</p>
+        <button onclick="location.href='{% url 'logout' %}';">로그아웃</button>
+        <button onclick="location.href='{% url 'chatbot_index' %}';">일자리 찾기</button>
 
-            <!-- 관리자 페이지로 이동하는 버튼 (관리자만 보이도록 설정 가능) -->
-            {% if user.is_staff %}
-                <button onclick="location.href='{% url 'admin:index' %}'">관리자 페이지로 이동</button>
-            {% endif %}
+        <!-- 이력서 작성 페이지로 이동하는 버튼 추가 -->
+        <button onclick="location.href='{% url 'resume' %}';">이력서 작성</button>
+
+        <!-- 관리자 페이지로 이동하는 버튼 (관리자만 보이도록 설정 가능) -->
+        {% if user.is_staff %}
+        <button onclick="location.href='{% url 'admin:index' %}';">관리자 페이지로 이동</button>
+        {% endif %}
         {% else %}<br><br><br><br><br><br><br><br>
-            <p style="color: gray;">로그인하지 않은 상태입니다. 아래 버튼을 클릭해 로그인<br>
-                또는 회원가입을 진행하세요.</p>
-            <button onclick="location.href='{% url 'signup' %}'">회원가입</button>
-            <button onclick="location.href='{% url 'login' %}'">로그인</button>
+        <p style="color: gray;">로그인하지 않은 상태입니다. 아래 버튼을 클릭해 로그인<br>
+            또는 회원가입을 진행하세요.</p>
+        <button onclick="location.href='{% url 'signup' %}';">회원가입</button>
+        <button onclick="location.href='{% url 'login' %}';">로그인</button>
         {% endif %}
     </div>
     <div class="api-banner">
@@ -50,9 +55,11 @@
         <a href="https://apis.map.kakao.com/web/sample/basicRoadview2/" class="api-button" target="_blank">
             카카오맵 로드뷰 API
         </a>
-        <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button" target="_blank">
+        <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-address" class="api-button"
+            target="_blank">
             카카오맵 주소 검색 API
         </a>
     </div>
 </body>
+
 </html>

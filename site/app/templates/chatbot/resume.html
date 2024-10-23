@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이력서 작성</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .resume-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .remove-button {
+            cursor: pointer;
+            color: red;
+        }
+
+        .add-section-btn {
+            margin-bottom: 20px;
+            /* 추가 버튼과 목록 사이의 간격 설정 */
+        }
+
+        .row.g-2 {
+            margin-top: 10px;
+            /* 학력 입력 필드 간의 간격 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="resume-container">
+            <button class="btn btn-secondary btn-back" onclick="window.history.back()">뒤로 가기</button>
+            <h2 class="text-center">이력서 작성</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- 성명 -->
+                <div class="mb-3">
+                    <label for="id_full_name" class="form-label">성명</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="id_full_name" name="full_name"
+                            value="{{ form.full_name.value|default_if_none:'' }}" placeholder="성명을 입력하세요" />
+                        <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
+                            data-target="id_full_name">🎤</button>
+                    </div>
+                </div>
+                <!-- 생년월일 추가 -->
+                <div class="mb-3">
+                    <label for="id_birth_date" class="form-label">생년월일</label>
+                    <input type="date" class="form-control" id="id_birth_date" name="birth_date"
+                        value="{{ form.birth_date.value|default_if_none:'' }}" />
+                    <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
+                        data-target="id_birth_date">🎤</button>
+                </div>
+
+                <!-- 이메일 -->
+                <div class="mb-3">
+                    <label for="id_email_id" class="form-label">이메일</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="id_email_id" name="email_id"
+                            value="{{ form.email.value|default_if_none:'' }}" placeholder="이메일 아이디 입력" />
+                        <span class="input-group-text">@</span>
+                        <select class="form-select" id="id_email_domain" name="email_domain">
+                            <option value="">도메인 선택</option>
+                            <option value="gmail.com">gmail.com</option>
+                            <option value="naver.com">naver.com</option>
+                            <option value="daum.net">daum.net</option>
+                            <option value="hanmail.net">hanmail.net</option>
+                            <option value="outlook.com">outlook.com</option>
+                            <option value="직접 입력">직접 입력</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 전화번호 -->
+                <div class="mb-3">
+                    <label for="id_phone_number" class="form-label">전화번호</label>
+                    <div class="input-group">
+                        <input type="tel" class="form-control" id="id_phone_number" name="phone_number"
+                            value="{{ form.phone_number.value|default_if_none:'' }}" placeholder="전화번호 입력" />
+                        <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
+                            data-target="id_phone_number" data-type="numeric">🎤</button>
+                    </div>
+                </div>
+
+                <!-- 주소 -->
+                <div class="mb-3">
+                    <label for="id_address" class="form-label">주소</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="id_address" name="address"
+                            value="{{ form.address.value|default_if_none:'' }}" placeholder="주소 입력"
+                            autocomplete="street-address" />
+                        <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
+                            data-target="id_address">🎤</button>
+                    </div>
+                </div>
+
+                <!-- 상세주소 -->
+                <div class="mb-3">
+                    <label for="id_detailed_address" class="form-label">상세 주소</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="id_detailed_address" name="detailed_address"
+                            value="{{ form.detailed_address.value|default_if_none:'' }}" placeholder="상세 주소 입력"
+                            autocomplete="address-line2" />
+                        <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
+                            data-target="id_detailed_address">🎤</button>
+                    </div>
+                </div>
+
+                <!-- 학력 입력 폼 -->
+                <div class="mb-3" id="education-container">
+                    <label for="education_1_school" class="form-label">학력</label>
+                    <button type="button" class="btn btn-secondary add-section-btn mt-2"
+                    onclick="addEducationSection()">+ 학력 추가</button>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-3">
+                            <input type="text" class="form-control" id="education_1_school" name="education[]"
+                                placeholder="학교명">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" id="education_1_period" name="education_period[]"
+                                placeholder="다닌 기간 (예: 2015-2019)">
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" name="education_major[]" placeholder="전공" />  <!-- 전공 입력란 추가 -->
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" id="education_1_grade" name="education_grade[]"
+                                placeholder="성적">
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- 경력 정보 -->
+                <div id="experience-container" class="mb-3">
+                    <label for="experience_1_company" class="form-label">경력</label>
+                    <button type="button" class="btn btn-secondary add-section-btn mt-2"
+                        onclick="addExperienceSection()">+ 경력 추가</button>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-3">
+                            <input type="text" class="form-control" id="experience_1_company"
+                                name="experience_company[]" placeholder="직장명" />
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" id="experience_1_period" name="experience_period[]"
+                                placeholder="근무 기간 (예: 2017-2020)" />
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" id="experience_1_position"
+                                name="experience_position[]" placeholder="직책" />
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" id="experience_1_role" name="experience_role[]"
+                                placeholder="업무" />
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- 자기소개 -->
+                <div class="mb-3">
+                    <label for="id_self_introduction" class="form-label">자기소개</label>
+                    <textarea class="form-control" id="id_self_introduction" name="self_introduction"
+                        placeholder="자기소개를 입력하세요">{{ form.self_introduction.value|default_if_none:'' }}</textarea>
+                    <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
+                        data-target="id_self_introduction">🎤</button>
+                </div>
+
+                <button type="submit" class="btn btn-primary">이력서 저장</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 음성 인식 기능 및 학력, 경력 추가 기능 -->
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputs = document.querySelectorAll('input, textarea');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    console.log(`${input.name}: ${input.value}`);
+                });
+            });
+            const recordingButtons = document.querySelectorAll('.recordingButton');
+            let recognition;
+            let isRecognizing = false;
+            let activeButton = null;
+
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+            } else if ('SpeechRecognition' in window) {
+                recognition = new SpeechRecognition();
+            } else {
+                alert('Web Speech API를 지원하지 않는 브라우저입니다.');
+                return;
+            }
+
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recordingButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    const lang = button.getAttribute('data-lang');
+                    const targetId = button.getAttribute('data-target');
+                    const targetInput = document.getElementById(targetId);
+
+                    if (isRecognizing) {
+                        recognition.stop();
+                        button.textContent = '🎤';
+                        button.style.backgroundColor = '';
+                    } else {
+                        recognition.lang = lang;
+                        recognition.start();
+                        button.textContent = '🎤 녹음중...';
+                        button.style.backgroundColor = '#808080';
+                        activeButton = button;
+                    }
+
+                    recognition.onstart = function () {
+                        isRecognizing = true;
+                    };
+
+                    recognition.onend = function () {
+                        isRecognizing = false;
+                        activeButton.textContent = '🎤';
+                        activeButton.style.backgroundColor = '';
+                    };
+
+                    recognition.onresult = function (event) {
+                        const transcript = event.results[0][0].transcript;
+                        targetInput.value = transcript;
+                    };
+
+                    recognition.onerror = function (event) {
+                        console.error('음성 인식 오류:', event.error);
+                    };
+                });
+            });
+        });
+
+        // 학력 섹션 추가
+        function addEducationSection() {
+            const container = document.getElementById('education-container');
+            const index = container.querySelectorAll('input[name="education[]"]').length + 1;
+
+            const section = `
+        <div class="row g-2 align-items-center mt-3" id="education-section-${index}">
+            <div class="col-3">
+                <input type="text" class="form-control" name="education[]" placeholder="학교명">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" name="education_period[]" placeholder="다닌 기간 (예: 2015-2019)">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" name="education_major[]" placeholder="전공" />  <!-- 전공 입력란 추가 -->
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" name="education_grade[]" placeholder="학점">
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-outline-danger" onclick="removeSection('education-section-${index}')">DEL</button>
+            </div>
+        </div>
+    `;
+            container.insertAdjacentHTML('beforeend', section);
+        }
+
+        // 경력 섹션 추가
+        function addExperienceSection() {
+            const container = document.getElementById('experience-container');
+            const index = container.querySelectorAll('input[name="experience_company[]"]').length + 1;
+
+            const section = `
+        <div class="row g-2 align-items-center mt-3" id="experience-section-${index}">
+            <div class="col-3">
+                <input type="text" class="form-control" name="experience_company[]" placeholder="직장명">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" name="experience_period[]" placeholder="근무 기간 (예: 2017-2020)">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" name="experience_position[]" placeholder="직책">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" name="experience_role[]" placeholder="업무">
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-outline-danger" onclick="removeSection('experience-section-${index}')">DEL</button>
+            </div>
+        </div>
+    `;
+            container.insertAdjacentHTML('beforeend', section);
+        }
+
+        // 섹션 삭제
+        function removeSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.remove();
+            }
+        }
+
+
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
