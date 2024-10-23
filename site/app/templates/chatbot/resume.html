@@ -67,7 +67,7 @@
                     <h4 class="mt-4"><label for="id_full_name" class="form-label">성명</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_full_name" name="full_name"
-                            value="{{ resume.full_name }}" placeholder="성명을 입력하세요" />
+                            value="{{user.last_name}} {{user.first_name}}" placeholder="성명을 입력하세요" />
                         <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
                             data-target="id_full_name">🎤</button>
                     </div>
@@ -86,26 +86,36 @@
                     <h4 class="mt-4"><label for="id_email_id" class="form-label">이메일</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_email_id" name="email_id"
-                            value="{{ form.email.value|default_if_none:'' }}" placeholder="이메일 아이디 입력" />
+                            value="{{ email_id }}" placeholder="이메일 아이디 입력" />
                         <span class="input-group-text">@</span>
                         <select class="form-select" id="id_email_domain" name="email_domain">
                             <option value="">도메인 선택</option>
-                            <option value="gmail.com">gmail.com</option>
-                            <option value="naver.com">naver.com</option>
-                            <option value="daum.net">daum.net</option>
-                            <option value="hanmail.net">hanmail.net</option>
-                            <option value="outlook.com">outlook.com</option>
+                            <option value="gmail.com" {% if email_domain == "gmail.com" %}selected{% endif %}>gmail.com</option>
+                            <option value="naver.com" {% if email_domain == "naver.com" %}selected{% endif %}>naver.com</option>
+                            <option value="daum.net" {% if email_domain == "daum.net" %}selected{% endif %}>daum.net</option>
+                            <option value="hanmail.net" {% if email_domain == "hanmail.net" %}selected{% endif %}>hanmail.net</option>
+                            <option value="nate.com" {% if email_domain == "nate.com" %}selected{% endif %}>nate.com</option>
+                            <option value="hotmail.com" {% if email_domain == "hotmail.com" %}selected{% endif %}>hotmail.com</option>
+                            <option value="yahoo.com" {% if email_domain == "yahoo.com" %}selected{% endif %}>yahoo.com</option>
+                            <option value="kakao.com" {% if email_domain == "kakao.com" %}selected{% endif %}>kakao.com</option>
+                            <option value="icloud.com" {% if email_domain == "icloud.com" %}selected{% endif %}>icloud.com</option>
+                            <option value="outlook.com" {% if email_domain == "outlook.com" %}selected{% endif %}>outlook.com</option>
                             <option value="직접 입력">직접 입력</option>
                         </select>
                     </div>
                 </div>
+                
+                
+                
+                
+
 
                 <!-- 전화번호 -->
                 <div class="mb-3">
                     <h4 class="mt-4"><label for="id_phone_number" class="form-label">전화번호</label></h4>
                     <div class="input-group">
                         <input type="tel" class="form-control" id="id_phone_number" name="phone_number"
-                            value="{{ form.phone_number.value|default_if_none:'' }}" placeholder="전화번호 입력" />
+                            value="{{ profile.phone_number }}" placeholder="전화번호 입력" />
                         <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
                             data-target="id_phone_number" data-type="numeric">🎤</button>
                     </div>
@@ -116,8 +126,7 @@
                     <h4 class="mt-4"><label for="id_address" class="form-label">주소</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_address" name="address"
-                            value="{{ form.address.value|default_if_none:'' }}" placeholder="주소 입력"
-                            autocomplete="street-address" />
+                            value="{{ profile.address }}" placeholder="주소 입력" autocomplete="street-address" />
                         <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
                             data-target="id_address">🎤</button>
                     </div>
@@ -128,7 +137,7 @@
                     <h4 class="mt-4"><label for="id_detailed_address" class="form-label">상세 주소</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_detailed_address" name="detailed_address"
-                            value="{{ form.detailed_address.value|default_if_none:'' }}" placeholder="상세 주소 입력"
+                            value="{{ profile.detailed_address }}" placeholder="상세 주소 입력"
                             autocomplete="address-line2" />
                         <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
                             data-target="id_detailed_address">🎤</button>
@@ -398,16 +407,16 @@
         }
 
 
-            function toggleOtherInput() {
-    var checkbox = document.getElementById('other-checkbox');
+        function toggleOtherInput() {
+            var checkbox = document.getElementById('other-checkbox');
             var otherInput = document.getElementById('other_industry');
             if (checkbox.checked) {
                 otherInput.style.display = 'block';
-    } else {
+            } else {
                 otherInput.style.display = 'none';
-            otherInput.value = ''; // 체크박스 해제 시 입력란 초기화
-    }
-}
+                otherInput.value = ''; // 체크박스 해제 시 입력란 초기화
+            }
+        }
     </script>
 
 

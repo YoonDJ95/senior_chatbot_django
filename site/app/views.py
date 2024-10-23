@@ -399,6 +399,7 @@ from django.http import HttpResponse
 @login_required
 def resume_view(request):
     user = request.user
+    email_id, email_domain = (user.email.split('@') if '@' in user.email else ('', ''))
     print(f"로그인된 사용자: {user.username}")  # 사용자 정보 확인 로그
 
     # 이력서 가져오기 또는 새로 생성
@@ -413,18 +414,13 @@ def resume_view(request):
     except Profile.DoesNotExist:
         profile = None
         print("프로필이 존재하지 않음.")  # 프로필이 없을 때 로그
-
+    
     if request.method == 'POST':
-        # 이메일 처리: email_id와 email_domain을 각각 가져와 합친 후 저장
-        email_id = request.POST.get('email_id', '')
-        email_domain = request.POST.get('email_domain', '')
-        full_email = f"{email_id}@{email_domain}" if email_domain else email_id
         
         form = ResumeForm(request.POST, instance=resume)
         if form.is_valid():
             resume = form.save(commit=False)
             resume.user = user
-            resume.email = full_email  # 이메일을 합쳐서 저장
             resume.save()
             print("이력서 저장 완료.")  # 이력서 저장 완료 로그
 
@@ -511,14 +507,14 @@ def resume_view(request):
         # 프로필 데이터로 이력서 필드 값 설정
         if profile:
             form.fields['full_name'].initial = f"{user.last_name} {user.first_name}" if user.last_name or user.first_name else ''
-            form.fields['email'].initial = user.email if user.email else ''
             form.fields['phone_number'].initial = profile.phone_number if profile.phone_number else ''
             form.fields['address'].initial = profile.address if profile.address else ''
             form.fields['detailed_address'].initial = profile.detailed_address if profile.detailed_address else ''
             print("프로필 데이터로 이력서 초기값 설정 완료.")  # 이력서 초기값 설정 완료 로그
-
+            
+        
     print("이력서 페이지 렌더링 중.")  # 페이지 렌더링 로그
-    return render(request, 'chatbot/resume.html', {'form': form, 'resume': resume, 'profile': profile})
+    return render(request, 'chatbot/resume.html', {'form': form, 'resume': resume, 'profile': profile,'email_id': email_id,'email_domain': email_domain})  # 이메일 도메인 추가
 
 
 

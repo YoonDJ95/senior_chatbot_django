@@ -64,7 +64,7 @@
             <ul class="list-group">
                 <li class="list-group-item"><strong>성명:</strong> {{ resume.full_name }}</li>
                 <li class="list-group-item"><strong>생년월일:</strong> {{ resume.birth_date|date:"Y년 m월 d일" }}</li>
-                <li class="list-group-item"><strong>이메일:</strong> {{ resume.email }}</li>
+                <li class="list-group-item"><strong>이메일:</strong> {{ user.email }}</li>
                 <li class="list-group-item"><strong>전화번호:</strong> {{ resume.phone_number }}</li>
                 <li class="list-group-item"><strong>주소:</strong> {{ resume.address }} {{ resume.detailed_address }}</li>
             </ul>
