@@ -41,6 +41,15 @@
             margin-top: 10px;
             /* 학력 입력 필드 간의 간격 */
         }
+
+        .custom-textarea {
+            width: 100%;
+            /* 100% 너비 */
+            height: 150px;
+            /* 높이 설정 */
+            resize: vertical;
+            /* 세로 방향으로만 크기 조정 가능 */
+        }
     </style>
 </head>
 
@@ -55,7 +64,7 @@
 
                 <!-- 성명 -->
                 <div class="mb-3">
-                    <label for="id_full_name" class="form-label">성명</label>
+                    <h4 class="mt-4"><label for="id_full_name" class="form-label">성명</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_full_name" name="full_name"
                             value="{{ form.full_name.value|default_if_none:'' }}" placeholder="성명을 입력하세요" />
@@ -65,7 +74,7 @@
                 </div>
                 <!-- 생년월일 추가 -->
                 <div class="mb-3">
-                    <label for="id_birth_date" class="form-label">생년월일</label>
+                    <h4 class="mt-4"><label for="id_birth_date" class="form-label">생년월일</label></h4>
                     <input type="date" class="form-control" id="id_birth_date" name="birth_date"
                         value="{{ form.birth_date.value|default_if_none:'' }}" />
                     <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
@@ -74,7 +83,7 @@
 
                 <!-- 이메일 -->
                 <div class="mb-3">
-                    <label for="id_email_id" class="form-label">이메일</label>
+                    <h4 class="mt-4"><label for="id_email_id" class="form-label">이메일</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_email_id" name="email_id"
                             value="{{ form.email.value|default_if_none:'' }}" placeholder="이메일 아이디 입력" />
@@ -93,7 +102,7 @@
 
                 <!-- 전화번호 -->
                 <div class="mb-3">
-                    <label for="id_phone_number" class="form-label">전화번호</label>
+                    <h4 class="mt-4"><label for="id_phone_number" class="form-label">전화번호</label></h4>
                     <div class="input-group">
                         <input type="tel" class="form-control" id="id_phone_number" name="phone_number"
                             value="{{ form.phone_number.value|default_if_none:'' }}" placeholder="전화번호 입력" />
@@ -104,7 +113,7 @@
 
                 <!-- 주소 -->
                 <div class="mb-3">
-                    <label for="id_address" class="form-label">주소</label>
+                    <h4 class="mt-4"><label for="id_address" class="form-label">주소</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_address" name="address"
                             value="{{ form.address.value|default_if_none:'' }}" placeholder="주소 입력"
@@ -116,7 +125,7 @@
 
                 <!-- 상세주소 -->
                 <div class="mb-3">
-                    <label for="id_detailed_address" class="form-label">상세 주소</label>
+                    <h4 class="mt-4"><label for="id_detailed_address" class="form-label">상세 주소</label></h4>
                     <div class="input-group">
                         <input type="text" class="form-control" id="id_detailed_address" name="detailed_address"
                             value="{{ form.detailed_address.value|default_if_none:'' }}" placeholder="상세 주소 입력"
@@ -126,11 +135,34 @@
                     </div>
                 </div>
 
+
+                <div class="mb-3">
+                    <h4 class="mt-4"><label class="form-label">선호 업종</label><br></h4>
+                    <input type="checkbox" name="preferred_industries" value="노인복지사"> 노인복지사<br>
+                    <input type="checkbox" name="preferred_industries" value="사회복지사"> 사회복지사<br>
+                    <input type="checkbox" name="preferred_industries" value="간호사"> 간호사<br>
+                    <input type="checkbox" name="preferred_industries" value="의료기술사"> 의료기술사<br>
+                    <input type="checkbox" name="preferred_industries" value="치매전문가"> 치매전문가<br>
+                    <input type="checkbox" name="preferred_industries" value="노인케어 전문가"> 노인케어 전문가<br>
+                    <input type="checkbox" name="preferred_industries" value="재활치료사"> 재활치료사<br>
+                    <input type="checkbox" name="preferred_industries" value="기타" id="other-checkbox"
+                        onclick="toggleOtherInput()"> 그 외<br>
+                    <input type="text" id="other_industry" name="other_industry" placeholder="직접 입력"
+                        style="display:none;">
+                </div>
+
+                <script>
+                    document.getElementById('other-industry-checkbox').addEventListener('change', function () {
+                        document.getElementById('other-industry').style.display = this.checked ? 'block' : 'none';
+                    });
+                </script>
+
+
                 <!-- 학력 입력 폼 -->
                 <div class="mb-3" id="education-container">
-                    <label for="education_1_school" class="form-label">학력</label>
+                    <h4 class="mt-4"><label for="education_1_school" class="form-label">학력</label></h4>
                     <button type="button" class="btn btn-secondary add-section-btn mt-2"
-                    onclick="addEducationSection()">+ 학력 추가</button>
+                        onclick="addEducationSection()">+ 학력 추가</button>
                     <div class="row g-2 align-items-center">
                         <div class="col-3">
                             <input type="text" class="form-control" id="education_1_school" name="education[]"
@@ -141,7 +173,8 @@
                                 placeholder="다닌 기간 (예: 2015-2019)">
                         </div>
                         <div class="col-3">
-                            <input type="text" class="form-control" name="education_major[]" placeholder="전공" />  <!-- 전공 입력란 추가 -->
+                            <input type="text" class="form-control" name="education_major[]" placeholder="전공" />
+                            <!-- 전공 입력란 추가 -->
                         </div>
                         <div class="col-2">
                             <input type="text" class="form-control" id="education_1_grade" name="education_grade[]"
@@ -154,7 +187,7 @@
 
                 <!-- 경력 정보 -->
                 <div id="experience-container" class="mb-3">
-                    <label for="experience_1_company" class="form-label">경력</label>
+                    <h4 class="mt-4"><label for="experience_1_company" class="form-label">경력</label></h4>
                     <button type="button" class="btn btn-secondary add-section-btn mt-2"
                         onclick="addExperienceSection()">+ 경력 추가</button>
                     <div class="row g-2 align-items-center">
@@ -175,14 +208,33 @@
                                 placeholder="업무" />
                         </div>
                     </div>
+                </div>
+
+                <h4 class="mt-4">자격증</h4>
+                <button type="button" class="btn btn-secondary add-section-btn mt-2"
+                    onclick="addCertificationSection()">+ 자격증 추가</button>
+                <div id="certification-container" class="mb-3">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-4">
+                            <input type="text" class="form-control" name="certification_name[]" placeholder="자격증명" />
+                        </div>
+                        <div class="col-4">
+                            <input type="date" class="form-control" name="certification_acquisition_date[]"
+                                placeholder="취득일자" />
+                        </div>
+                        <div class="col-3">
+                            <input type="text" class="form-control" name="certification_issuing_agency[]"
+                                placeholder="공증기관" />
+                        </div>
+                    </div>
 
                 </div>
 
 
                 <!-- 자기소개 -->
                 <div class="mb-3">
-                    <label for="id_self_introduction" class="form-label">자기소개</label>
-                    <textarea class="form-control" id="id_self_introduction" name="self_introduction"
+                    <h4 class="mt-4"><label for="id_self_introduction" class="form-label">자기소개</label></h4>
+                    <textarea class="custom-textarea" id="id_self_introduction" name="self_introduction"
                         placeholder="자기소개를 입력하세요">{{ form.self_introduction.value|default_if_none:'' }}</textarea>
                     <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
                         data-target="id_self_introduction">🎤</button>
@@ -315,6 +367,28 @@
             container.insertAdjacentHTML('beforeend', section);
         }
 
+        function addCertificationSection() {
+            const container = document.getElementById('certification-container');
+            const index = container.querySelectorAll('input[name="certification_name[]"]').length + 1;
+            const section = `
+          <div class="row g-2 align-items-center mt-3" id="Certification-section-${index}">
+            <div class="col-4">
+              <input type="text" class="form-control" name="certification_name[]" placeholder="자격증명" />
+            </div>
+            <div class="col-4">
+              <input type="date" class="form-control" name="certification_acquisition_date[]" placeholder="취득일자" />
+            </div>
+            <div class="col-3">
+              <input type="text" class="form-control" name="certification_issuing_agency[]" placeholder="공증기관" />
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-outline-danger" onclick="removeSection('Certification-section-${index}')">DEL</button>
+            </div>
+          </div>
+        `;
+            container.insertAdjacentHTML('beforeend', section);
+        }
+
         // 섹션 삭제
         function removeSection(sectionId) {
             const section = document.getElementById(sectionId);
@@ -324,7 +398,18 @@
         }
 
 
+            function toggleOtherInput() {
+    var checkbox = document.getElementById('other-checkbox');
+            var otherInput = document.getElementById('other_industry');
+            if (checkbox.checked) {
+                otherInput.style.display = 'block';
+    } else {
+                otherInput.style.display = 'none';
+            otherInput.value = ''; // 체크박스 해제 시 입력란 초기화
+    }
+}
     </script>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

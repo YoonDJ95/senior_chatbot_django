@@ -32,21 +32,6 @@
             margin-bottom: 10px;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-primary:hover,
-        .btn-secondary:hover {
-            opacity: 0.8;
-        }
-
         table {
             width: 100%;
             margin-bottom: 20px;
@@ -84,7 +69,6 @@
                 <li class="list-group-item"><strong>주소:</strong> {{ resume.address }} {{ resume.detailed_address }}</li>
             </ul>
 
-
             <!-- 학력 정보 테이블 -->
             <h4 class="mt-4">학력 정보</h4>
             <table>
@@ -101,7 +85,7 @@
                     <tr>
                         <td>{{ education.period }}</td>
                         <td>{{ education.school }}</td>
-                        <td>{{ education.major|default_if_none:"-" }}</td> <!-- 전공 필드 추가 -->
+                        <td>{{ education.major|default_if_none:"-" }}</td>
                         <td>{{ education.grade|default_if_none:"-" }}</td>
                     </tr>
                     {% empty %}
@@ -111,7 +95,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-
 
             <!-- 경력 정보 테이블 -->
             <h4 class="mt-4">경력 정보</h4>
@@ -126,14 +109,12 @@
                 </thead>
                 <tbody>
                     {% for experience in experience_data %}
-                    {% ifchanged experience %}
                     <tr>
                         <td>{{ experience.period }}</td>
                         <td>{{ experience.company }}</td>
                         <td>{{ experience.position }}</td>
                         <td>{{ experience.role }}</td>
                     </tr>
-                    {% endifchanged %}
                     {% empty %}
                     <tr>
                         <td colspan="4">등록된 경력이 없습니다.</td>
@@ -142,13 +123,53 @@
                 </tbody>
             </table>
 
+            <!-- 자격증 정보 테이블 -->
+            <h4 class="mt-4">자격증 정보</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>자격증명</th>
+                        <th>취득일자</th>
+                        <th>공증기관</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for certification in resume.certification_set.all %}
+                    <tr>
+                        <td>{{ certification.name }}</td>
+                        <td>{{ certification.acquisition_date|date:"Y년 m월 d일" }}</td>
+                        <td>{{ certification.issuing_agency }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">등록된 자격증이 없습니다.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% load custom_filters %}  <!-- 커스텀 필터 로드 -->
+
+            <h4>선호 업종</h4>
+            <ul>
+                {% with preferred_industries=resume.preferred_industries|split_string:', ' %}
+                    {% if preferred_industries %}
+                        {% for industry in preferred_industries %}
+                            <li>{{ industry }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>등록된 선호 업종이 없습니다.</li>
+                    {% endif %}
+                {% endwith %}
+            </ul>
+            
+
         </div>
+
         <div class="resume-summary mt-4">
             <ul class="list-group">
                 <li class="list-group-item"><strong>자기소개:</strong> {{ resume.self_introduction }}</li>
             </ul>
         </div>
-
 
         <div class="text-center mt-4">
             <button class="btn btn-secondary btn-back" onclick="window.history.back()">뒤로 가기</button>

@@ -388,7 +388,7 @@ def index(request):
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Resume, Education, Experience
+from .models import Resume, Education, Experience, Certification
 from accounts.models import Profile
 from .forms import ResumeForm
 from io import BytesIO
@@ -433,7 +433,6 @@ def resume_view(request):
             Experience.objects.filter(resume=resume).delete()
 
             # 학력 데이터 저장
-            # 학력 데이터 저장
             education_data = request.POST.getlist('education[]')
             education_period_data = request.POST.getlist('education_period[]')
             education_grade_data = request.POST.getlist('education_grade[]')
@@ -468,6 +467,40 @@ def resume_view(request):
                         role=experience_role_data[i]
                     )
 
+            # 선호 업종 데이터 저장
+            preferred_industries = request.POST.getlist('preferred_industries')
+
+            # 사용자가 입력한 기타 업종
+            other_industry = request.POST.get('other_industry', '').strip()
+
+            # '기타'가 선택된 경우에만 추가
+            if '기타' in preferred_industries and other_industry:
+                # 기존 업종 리스트에 기타 업종을 추가할 때 괄호로 감싸기
+                preferred_industries.remove('기타')  # 사용자 입력 추가
+                preferred_industries.append(f'{other_industry}')  # 사용자 입력 추가
+
+            # 선호 업종을 문자열로 변환하여 저장
+            resume.preferred_industries = ', '.join(preferred_industries)
+            resume.save()
+
+            
+            # 자격증 데이터 저장
+            certification_data = request.POST.getlist('certification_name[]')
+            acquisition_dates = request.POST.getlist('certification_acquisition_date[]')
+            issuing_agencies = request.POST.getlist('certification_issuing_agency[]')
+
+            # 기존 자격증 삭제
+            Certification.objects.filter(resume=resume).delete()
+
+            for i in range(len(certification_data)):
+                if certification_data[i]:  # 자격증 정보가 입력된 경우만 저장
+                    Certification.objects.create(
+                        resume=resume,
+                        name=certification_data[i],
+                        acquisition_date=acquisition_dates[i],
+                        issuing_agency=issuing_agencies[i]
+                    )
+            
             return redirect('resume_success')  # 성공 페이지로 리다이렉트
         else:
             print("폼이 유효하지 않음.")  # 폼 유효성 검사 실패 로그

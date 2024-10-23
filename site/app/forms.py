@@ -1,5 +1,5 @@
 from django import forms
-from .models import Resume, Education, Experience
+from .models import Resume, Education, Experience, Certification
 
 class ResumeForm(forms.ModelForm):
     class Meta:
@@ -25,3 +25,8 @@ class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
         fields = ['company', 'period', 'position', 'role']
+
+class CertificationForm(forms.ModelForm):
+    class Meta:
+        model = Certification
+        fields = ['name', 'acquisition_date', 'issuing_agency']

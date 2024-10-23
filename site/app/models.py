@@ -19,6 +19,8 @@ class Resume(models.Model):
     detailed_address = models.CharField(max_length=255, blank=True, null=True)
     self_introduction = models.TextField(blank=True, null=True)  # 이 필드를 추가
     birth_date = models.DateField(null=True, blank=True)
+    self_introduction = models.TextField(null=True, blank=True)
+    preferred_industries = models.TextField(null=True, blank=True)  # 선호 업종을 저장할 필드
 
 class Education(models.Model):
     resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
@@ -37,3 +39,13 @@ class Experience(models.Model):
     period = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
     role = models.CharField(max_length=255)
+
+
+class Certification(models.Model):
+    resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    acquisition_date = models.DateField(null=True, blank=True)  # 취득일자 필드 추가
+    issuing_agency = models.CharField(max_length=100)  # 공증기관 필드 추가
+
+    def __str__(self):
+        return self.name
