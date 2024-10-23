@@ -16,7 +16,7 @@
 </head>
 <body>
     <div class="container">
-        <img src="{% static 'chatbot/로고.png' %}" width="300" height="250"/>
+        <img src="{% static 'chatbot/로고.png' %}" width="300" height="250" style="margin-top: 100px;"/>
         {% if messages %}
         <ul>
             {% for message in messages %}
@@ -26,7 +26,7 @@
         {% endif %}
 
         <!-- 로그인 여부에 따른 다른 콘텐츠 표시 -->
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated %}<br><br><br><br><br><br><br><br>
             <p>안녕하세요, {{ user.username }}님!</p>
             <button onclick="location.href='{% url 'logout' %}'">로그아웃</button>
             <button onclick="location.href='{% url 'chatbot_index' %}'">일자리 찾기</button>
@@ -35,7 +35,7 @@
             {% if user.is_staff %}
                 <button onclick="location.href='{% url 'admin:index' %}'">관리자 페이지로 이동</button>
             {% endif %}
-        {% else %}<br><br>
+        {% else %}<br><br><br><br><br><br><br><br>
             <p style="color: gray;">로그인하지 않은 상태입니다. 아래 버튼을 클릭해 로그인<br>
                 또는 회원가입을 진행하세요.</p>
             <button onclick="location.href='{% url 'signup' %}'">회원가입</button>

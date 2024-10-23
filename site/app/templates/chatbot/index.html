@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8371fd535d5d33dfcec6e7f3cdce0d5a"></script>
     <script>
-        // Django 템플릿에서 미리 이미지 경로를 계산
-        const recOnImageUrl = "{% static 'chatbot/rec_on.png' %}";
-        const recOffImageUrl = "{% static 'chatbot/rec_off.png' %}";
-        const toggleRecordingUrl = "{% url 'toggle_recording' %}";
-        const indexUrl = "{% url 'chatbot_index' %}" // 'index' URL 미리 계산
+      // Django 템플릿에서 미리 이미지 경로를 계산
+      const recOnImageUrl = "{% static 'chatbot/rec_on.png' %}"
+      const recOffImageUrl = "{% static 'chatbot/rec_off.png' %}"
+      const toggleRecordingUrl = "{% url 'toggle_recording' %}"
+      const indexUrl = "{% url 'chatbot_index' %}" // 'index' URL 미리 계산
     </script>
     <style>
       body {
@@ -82,7 +82,7 @@
           <button onclick="sendMessage()">전송</button>
 
           <!-- 녹음 시작/중지 버튼 -->
-          <button id="recordingButton"  class="record-btn">녹음하기</button>
+          <button id="recordingButton" class="record-btn">녹음하기</button>
         </div>
       </div>
 
@@ -103,6 +103,66 @@
     </div>
 
     <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function () {
+        const recordingButton = document.getElementById('recordingButton')
+        const userAddressInput = document.getElementById('userAddress')
+      
+        let recognition
+        let isRecognizing = false
+      
+        // Web Speech API 지원 여부 확인
+        if ('webkitSpeechRecognition' in window) {
+          recognition = new webkitSpeechRecognition()
+        } else if ('SpeechRecognition' in window) {
+          recognition = new SpeechRecognition()
+        } else {
+          alert('Web Speech API를 지원하지 않는 브라우저입니다.')
+          return
+        }
+      
+        recognition.continuous = false // 한 번에 한 문장만 인식
+        recognition.interimResults = false // 중간 결과 표시 안 함
+        recognition.lang = 'ko-KR' // 한국어 설정
+      
+        // 음성 인식 시작 버튼 클릭 이벤트
+        recordingButton.addEventListener('click', function () {
+          if (isRecognizing) {
+            recognition.stop() // 이미 인식 중이면 중지
+            recordingButton.textContent = '녹음하기'
+            recordingButton.classList.remove('recording')
+          } else {
+            recognition.start() // 음성 인식 시작
+            recordingButton.textContent = '녹음 중...'
+            recordingButton.classList.add('recording')
+          }
+        })
+      
+        // 음성 인식이 시작될 때
+        recognition.onstart = function () {
+          isRecognizing = true
+          console.log('음성 인식 시작')
+        }
+      
+        // 음성 인식이 종료될 때
+        recognition.onend = function () {
+          isRecognizing = false
+          recordingButton.textContent = '녹음하기'
+          recordingButton.classList.remove('recording')
+          console.log('음성 인식 종료')
+        }
+      
+        // 음성 인식 결과 처리
+        recognition.onresult = function (event) {
+          let transcript = event.results[0][0].transcript.trim()
+          userAddressInput.value = transcript // 인식된 텍스트를 userAddress 필드에 입력
+          console.log('인식된 주소:', transcript)
+        }
+      
+        recognition.onerror = function (event) {
+          console.error('음성 인식 오류:', event.error)
+          alert('음성 인식 중 오류가 발생했습니다.')
+        }
+      })
       // CSRF 토큰을 가져오는 함수 정의
       const csrftoken = getCookie('csrftoken')
       function getCookie(name) {
@@ -123,6 +183,5 @@
     </script>
     <script src="{% static 'chatbot/script.js' %}"></script> <!-- 스크립트 파일 로드 -->
     <script src="{% static 'chatbot/load.js' %}"></script> <!-- 스크립트 파일 로드 -->
-    <script src="{% static 'chatbot/rec.js' %}"></script>
   </body>
 </html>

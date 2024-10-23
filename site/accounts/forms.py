@@ -72,7 +72,7 @@ class SignupForm(forms.Form):
             ('치매전문가', '치매전문가'),
             ('노인케어 전문가', '노인케어 전문가'),
             ('재활치료사', '재활치료사'),
-            ('기타', '기타'),
+            ('아파트 경비', '아파트 경비'),
         ],
         widget=forms.CheckboxSelectMultiple,
         required=False, # 필수 항목에서 제외
