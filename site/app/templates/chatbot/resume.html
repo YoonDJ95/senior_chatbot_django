@@ -77,8 +77,6 @@
                     <h4 class="mt-4"><label for="id_birth_date" class="form-label">생년월일</label></h4>
                     <input type="date" class="form-control" id="id_birth_date" name="birth_date"
                         value="{{ form.birth_date.value|default_if_none:'' }}" />
-                    <button type="button" class="btn btn-outline-secondary recordingButton" data-lang="ko-KR"
-                        data-target="id_birth_date">🎤</button>
                 </div>
 
                 <!-- 이메일 -->
@@ -105,11 +103,6 @@
                     </div>
                 </div>
                 
-                
-                
-                
-
-
                 <!-- 전화번호 -->
                 <div class="mb-3">
                     <h4 class="mt-4"><label for="id_phone_number" class="form-label">전화번호</label></h4>
@@ -286,6 +279,7 @@
                 button.addEventListener('click', function () {
                     const lang = button.getAttribute('data-lang');
                     const targetId = button.getAttribute('data-target');
+                    const type = button.getAttribute('data-type')
                     const targetInput = document.getElementById(targetId);
 
                     if (isRecognizing) {
@@ -311,9 +305,56 @@
                     };
 
                     recognition.onresult = function (event) {
-                        const transcript = event.results[0][0].transcript;
-                        targetInput.value = transcript;
-                    };
+              let transcript = event.results[0][0].transcript
+              // 숫자만 추출 (전화번호)
+              if (transcript.endsWith('.')) {
+               transcript = transcript.slice(0, -1);
+                }
+                transcript = transcript.replace("다시", "-");
+            
+                if (targetInput.id === 'id_address' || targetInput.id === 'id_detailed_address') {
+                    transcript = transcript.replace(/[,\.]+/g, ''); // ',' 및 '.' 제거
+                    transcript = transcript.replace(/(\d+)\s*,\s*-\s*(\d+)/g, '$1-$2'); // "72, - 26" -> "72-26"
+                    transcript = transcript.replace(/(\d+)\s*-\s*(\d+)/g, '$1-$2'); // "72 - 26" -> "72-26"
+                    transcript = transcript.replace(/(\d+)\s+(\d+)/g, '$1-$2'); // "72 26" -> "72-26"
+                    transcript = transcript.replace(/영/g, '0')
+                       .replace(/일/g, '1')
+                       .replace(/이/g, '2')
+                       .replace(/삼/g, '3')
+                       .replace(/사/g, '4')
+                       .replace(/오/g, '5')
+                       .replace(/육/g, '6')
+                       .replace(/칠/g, '7')
+                       .replace(/팔/g, '8')
+                       .replace(/구/g, '9')
+                       .replace(/십/g, '10'); // 모든 한자리 발음 숫자 변환
+                }
+              if (type === 'numeric') {
+                transcript = transcript.replace(/[^0-9]/g, '') // 숫자만 추출
+      
+                // 전화번호 포맷 적용 (3-3-4 또는 3-4-4)
+                if (transcript.length === 11) {
+                  targetInput.value = transcript.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+                } else if (transcript.length === 10) {
+                  targetInput.value = transcript.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
+                } else {
+                  alert('유효한 전화번호를 말해주세요.')
+                }
+      
+                // 성/이름 처리
+              } else if (type === 'name') {
+                const nameParts = transcript.split('') // 한 글자씩 나눔
+                if (nameParts.length > 1) {
+                  document.getElementById('id_last_name').value = nameParts[0] // 첫 글자는 성
+                  document.getElementById('id_first_name').value = nameParts.slice(1).join('') // 나머지는 이름
+                } else {
+                  alert('유효한 성/이름을 말해주세요.')
+                }
+                // 그 외의 필드 처리
+              } else {
+                targetInput.value = transcript
+              }
+            }
 
                     recognition.onerror = function (event) {
                         console.error('음성 인식 오류:', event.error);
