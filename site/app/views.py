@@ -391,10 +391,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Resume, Education, Experience, Certification
 from accounts.models import Profile
 from .forms import ResumeForm
-from io import BytesIO
-from reportlab.pdfgen import canvas
-from django.http import HttpResponse
-
 
 @login_required
 def resume_view(request):
