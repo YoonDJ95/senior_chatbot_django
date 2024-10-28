@@ -1,0 +1,32 @@
+# 주의사항
+"Visual Studio Code 환경에서 수행하였음."
+"터미널은 기본 powershell로 되어있으나 이걸 cmd로 바꾸고 cmd에서 수행할 것"
+" 만약 가상화 서버까지 (mysite까지) 통으로 덮어 씌울 경우 하기" [0 ~ 7] "을 순서대로 수행할것"
+
+# 가상화 설치방법
+"경로이동 : .../yourfolder" # 상위 폴더 지정
+
+[0] "python 설치" # 설치시점에 PATH 환경변수도 함께 적용
+
+"python -m venv mysite" # yourfolder 안에 가상화 작업 수행
+"/yourfolder/mysite 폴더 생성" # 가상화
+[1] "mysite/Scripts 경로로 이동" # cd mysite > cd Scripts (대소문자 구분)
+[2] "해당 경로에서 activate 입력" #가상서버로 이동 터미널 경로 앞에 (mysite) 가 출력
+
+# 가상화 상태 (mysite) 가 출력된 성태에서 터미널에 하기 문구 입력 (프레임워크)
+[3] "pip install django django-bootstrap4 requests sounddevice numpy wavio urllib3 reportlab" # 프레임워크 설치
+
+# 기능 폴더 구현
+"경로이동 : .../yourfolder"
+"mkdir site" # mysite와 같은 위치에 site 라는 폴더 생성
+[4] "경로이동 : .../yourfolder/site"
+
+# 이후 첨부된 site 파일을 덮어씌우면 됩니다.
+# Tree.txt에 폴더 경로들 기재해놨습니다.
+
+# 마이그레이션 실행
+[5] "python manage.py makemigrations"
+[6] "python manage.py migrate"
+[7] "python manage.py runserver" # 가상서버 실행
+
+[8] " http://127.0.0.1:8000/ 실행" # 페이지 오픈
